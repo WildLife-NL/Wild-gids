@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:wildgids/app.dart';
+import 'package:wildgids/config/app_config.dart';
 import 'package:wildgids/models/services/auth.dart';
 import 'package:wildgids/views/widgets/custom_scaffold.dart';
 
@@ -93,7 +94,8 @@ class VerificationPageState extends State<VerificationPage> {
           Center(
             child: GestureDetector(
               onTap: () {
-                AuthService().authenticate(widget.email, "");
+                AuthService().authenticate(
+                    widget.email, AppConfig.shared.displayNameApp);
               },
               child: const Text(
                 'Did not receive a code? Send new email',
