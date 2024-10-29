@@ -6,7 +6,7 @@
 import 'dart:async' as _i4;
 
 import 'package:mockito/mockito.dart' as _i1;
-import 'package:wildgids/models/services/auth.dart' as _i3;
+import 'package:wildgids/services/auth.dart' as _i3;
 import 'package:wildlife_api_connection/models/user.dart' as _i2;
 
 // ignore_for_file: type=lint

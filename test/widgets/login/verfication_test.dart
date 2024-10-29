@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
-import 'package:wildgids/models/services/auth.dart';
+import 'package:wildgids/services/auth.dart';
 import 'package:wildgids/views/login/verfication.dart';
 import 'package:wildgids/app.dart';
 import 'package:wildlife_api_connection/models/user.dart';
@@ -19,10 +19,10 @@ void main() {
     mockAuthService = MockAuthService();
   });
 
-  Future<void> _buildVerificationPage(WidgetTester tester) async {
+  Future<void> _buildVerificationView(WidgetTester tester) async {
     await tester.pumpWidget(
       MaterialApp(
-        home: VerificationPage(
+        home: VerificationView(
             email: 'test@example.com', authService: mockAuthService),
       ),
     );
@@ -30,7 +30,7 @@ void main() {
 
   testWidgets('Displays verification page UI elements',
       (WidgetTester tester) async {
-    await _buildVerificationPage(tester);
+    await _buildVerificationView(tester);
 
     expect(find.text('Enter code'), findsOneWidget);
     expect(find.textContaining('An email has been sent to:'), findsOneWidget);
@@ -41,7 +41,7 @@ void main() {
 
   testWidgets('Navigates focus to next input field on code input',
       (WidgetTester tester) async {
-    await _buildVerificationPage(tester);
+    await _buildVerificationView(tester);
 
     // Enter a digit in the first input box
     await tester.enterText(find.byType(TextField).first, '1');
@@ -59,7 +59,7 @@ void main() {
       return Future.value(User(id: "1", email: "test@email.com"));
     });
 
-    await _buildVerificationPage(tester);
+    await _buildVerificationView(tester);
 
     for (int i = 0; i < 6; i++) {
       await tester.enterText(find.byType(TextField).at(i), '1');
@@ -76,19 +76,19 @@ void main() {
 
   testWidgets('Shows validation error if fields are empty',
       (WidgetTester tester) async {
-    await _buildVerificationPage(tester);
+    await _buildVerificationView(tester);
 
     // Tap on the Login button without entering any input
     await tester.tap(find.widgetWithText(ElevatedButton, 'Login'));
     await tester.pumpAndSettle();
 
     // No navigation should happen, remaining on the same page
-    expect(find.byType(VerificationPage), findsOneWidget);
+    expect(find.byType(VerificationView), findsOneWidget);
   });
 
   testWidgets('Calls AuthService.authenticate when resend email is tapped',
       (WidgetTester tester) async {
-    await _buildVerificationPage(tester);
+    await _buildVerificationView(tester);
 
     // Tap on the resend text
     await tester.tap(find.text('Did not receive a code? Send new email'));

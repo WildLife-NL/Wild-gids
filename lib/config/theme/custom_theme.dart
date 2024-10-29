@@ -127,6 +127,12 @@ class CustomTheme {
           color: CustomColors.dark,
         ),
       ),
+
+      // Colors
+      primaryColor: CustomColors.primary,
+
+      // Background
+      scaffoldBackgroundColor: CustomColors.light700,
     );
   }
 }

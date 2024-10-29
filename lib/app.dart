@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:wildgids/config/theme/custom_theme.dart';
-import 'package:wildgids/models/services/auth.dart';
+import 'package:wildgids/services/auth.dart';
+import 'package:wildgids/views/home/home.dart';
 import 'package:wildgids/views/login/login.dart';
-import 'package:wildgids/views/widgets/custom_scaffold.dart';
 
 class App extends StatefulWidget {
   const App({super.key});
@@ -66,11 +66,11 @@ class _InitializerState extends State<Initializer> {
             ),
           );
         } else if (snapshot.data != null && snapshot.data == true) {
-          return const CustomScaffold(selectedIndex: 0, body: Center());
+          return const HomeView();
         } else {
           return Scaffold(
             body: Center(
-              child: LoginPage(
+              child: LoginView(
                 authService: AuthService(),
               ),
             ),

@@ -1,44 +1,91 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_map/flutter_map.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:latlong2/latlong.dart';
-import 'package:wildgids/config/theme/asset_icons.dart';
+import 'package:wildgids/config/theme/custom_theme.dart';
+import 'package:wildgids/config/theme/size_setter.dart';
+import 'package:wildgids/views/map/map.dart';
+import 'package:wildgids/views/profile/profile.dart';
+import 'package:wildgids/views/wiki/wiki.dart';
+import 'package:wildgids/views/home/widgets/bottom_navigation_bar_indicator.dart';
 
-class HomePage extends StatelessWidget {
-  const HomePage({super.key});
+class HomeView extends StatefulWidget {
+  const HomeView({
+    super.key,
+  });
+
+  @override
+  State<HomeView> createState() => _HomeViewState();
+}
+
+class _HomeViewState extends State<HomeView> {
+  int selectedIndex = 0;
+
+  void onItemTapped(int index) {
+    setState(() {
+      selectedIndex = index;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    const startingPoint = LatLng(51.25851739912562, 5.622422796819703);
-
-    return FlutterMap(
-      mapController: MapController(),
-      options: MapOptions(
-          initialCenter: startingPoint, // Center the map over Weerterbos
-          initialZoom: 11,
-
-          // Set map zoom and location boundaries
-          minZoom: 9,
-          maxZoom: 18,
-          cameraConstraint: CameraConstraint.contain(
-              bounds: LatLngBounds(const LatLng(52.25851, 6.6224),
-                  const LatLng(50.25851, 4.6224)))),
-      children: [
-        TileLayer(
-          // Display map tiles from any source
-          urlTemplate:
-              'https://tile.openstreetmap.org/{z}/{x}/{y}.png', // OSMF's Tile Server
-          userAgentPackageName: 'com.wildlifenl.wildgids',
-        ),
-        MarkerLayer(markers: [
-          Marker(
-              point: startingPoint,
-              width: 30,
-              height: 30,
-              child: SvgPicture.asset(AssetIcons.locationDot),
-              rotate: true),
-        ])
-      ],
+    return Scaffold(
+      body: Stack(
+        children: [
+          IndexedStack(
+            index: selectedIndex,
+            children: const [
+              MapView(),
+              WikiView(),
+              ProfileView(),
+            ],
+          ),
+        ],
+      ),
+      bottomNavigationBar: Stack(
+        children: [
+          Theme(
+            data: Theme.of(context).copyWith(
+              splashFactory: NoSplash.splashFactory,
+            ),
+            child: SizedBox(
+              height: SizeSetter.getBottomNavigationBarHeight(),
+              child: BottomNavigationBar(
+                items: const [
+                  BottomNavigationBarItem(
+                    key: Key('home_view_button'),
+                    icon: Icon(Icons.home),
+                    label: 'Home',
+                  ),
+                  BottomNavigationBarItem(
+                    key: Key('wiki_view_button'),
+                    icon: Icon(Icons.book),
+                    label: 'Wiki',
+                  ),
+                  BottomNavigationBarItem(
+                    key: Key('profile_view_button'),
+                    icon: Icon(Icons.person),
+                    label: 'Profiel',
+                  ),
+                ],
+                type: BottomNavigationBarType.fixed,
+                selectedItemColor: Theme.of(context).primaryColor,
+                unselectedItemColor: Colors.black,
+                backgroundColor: Colors.white,
+                selectedFontSize: SizeSetter.getBodySmallSize(),
+                unselectedFontSize: SizeSetter.getBodySmallSize(),
+                currentIndex: selectedIndex,
+                unselectedLabelStyle:
+                    CustomTheme(context).themeData.textTheme.bodySmall,
+                selectedLabelStyle:
+                    CustomTheme(context).themeData.textTheme.bodySmall,
+                onTap: onItemTapped,
+              ),
+            ),
+          ),
+          BottomNavigationBarIndicator(
+            selectedIndex: selectedIndex,
+            indicatorWidth: 55,
+          ),
+        ],
+      ),
     );
   }
 }
