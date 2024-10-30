@@ -35,6 +35,7 @@ class DetailedWikiViewState extends State<DetailedWikiView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        scrolledUnderElevation: 0,
         backgroundColor: Colors.transparent,
         elevation: 0,
         title: Text(

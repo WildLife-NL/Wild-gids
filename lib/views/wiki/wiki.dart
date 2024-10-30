@@ -51,6 +51,7 @@ class WikiViewState extends State<WikiView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        scrolledUnderElevation: 0,
         backgroundColor: Colors.transparent,
         title: ClipRRect(
           borderRadius: BorderRadius.circular(15),
