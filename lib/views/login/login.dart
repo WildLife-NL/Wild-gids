@@ -1,22 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:wildgids/config/app_config.dart';
-import 'package:wildgids/models/services/auth.dart';
+import 'package:wildgids/services/auth.dart';
 import 'package:wildgids/views/login/verfication.dart';
-import 'package:wildgids/views/widgets/custom_scaffold.dart';
+import 'package:wildgids/widgets/custom_scaffold.dart';
 
-class LoginPage extends StatefulWidget {
+class LoginView extends StatefulWidget {
   final AuthService authService;
 
-  const LoginPage({
+  const LoginView({
     super.key,
     required this.authService,
   });
 
   @override
-  LoginPageState createState() => LoginPageState();
+  LoginViewState createState() => LoginViewState();
 }
 
-class LoginPageState extends State<LoginPage> {
+class LoginViewState extends State<LoginView> {
   final _formKey = GlobalKey<FormState>();
 
   final TextEditingController _emailController = TextEditingController();
@@ -30,8 +30,6 @@ class LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return CustomScaffold(
-      isAuthenticated: true,
-      selectedIndex: -1,
       body: Column(
         children: [
           const Text(
@@ -87,7 +85,7 @@ class LoginPageState extends State<LoginPage> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => VerificationPage(
+                          builder: (context) => VerificationView(
                             email: email,
                             authService: widget.authService,
                           ),
