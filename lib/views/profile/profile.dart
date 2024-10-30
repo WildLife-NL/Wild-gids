@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:wildgids/config/theme/custom_colors.dart';
+import 'package:wildgids/models/services/auth.dart';
 import 'package:wildgids/models/services/user.dart';
 import 'package:wildlife_api_connection/models/user.dart';
 
@@ -50,14 +52,14 @@ class ProfilePageState extends State<ProfilePage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text(
-          "Profile",
+          "Profiel",
           style: TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.bold,
           ),
         ),
         const Text(
-          "Manage your profile information",
+          "Manage je profiel informatie",
           style: TextStyle(
             fontSize: 20,
             color: Colors.grey,
@@ -76,182 +78,145 @@ class ProfilePageState extends State<ProfilePage> {
               ),
             )
           ] else ...[
-            Text(
-              "User ID: ${_profile!.id}",
-              style: const TextStyle(
+            const Text(
+              "Algemeen",
+              style: TextStyle(
                 fontSize: 20,
+                fontWeight: FontWeight.bold,
               ),
             ),
+            const SizedBox(height: 10),
             if (_profile!.name != null && _profile!.name != "") ...[
-              Text(
-                "Name: ${_profile!.name}",
-                style: const TextStyle(
-                  fontSize: 20,
-                ),
+              ListTile(
+                leading: const Icon(Icons.person),
+                trailing: const Icon(Icons.chevron_right),
+                title: Text(_profile!.name ?? ""),
+                onTap: () {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: const Text('Enter je naam'),
+                        content: Form(
+                          key: _formKey,
+                          child: TextFormField(
+                            controller: _controller,
+                            decoration: const InputDecoration(
+                              labelText: 'Naam',
+                            ),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Naam kan niet leeg zijn';
+                              }
+
+                              String pattern = r'^[A-Za-z\s]+$';
+                              RegExp regex = RegExp(pattern);
+
+                              if (!regex.hasMatch(value)) {
+                                return 'Naam kan geen cijfers of speciale tekens bevatten';
+                              }
+                              return null;
+                            },
+                          ),
+                        ),
+                        actions: <Widget>[
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            child: const Text('Cancel'),
+                          ),
+                          TextButton(
+                            onPressed: () async {
+                              await UserService().updateProfile(
+                                "",
+                              );
+                              _fetchProfileInfo();
+
+                              if (!context.mounted) return;
+                              Navigator.of(context).pop();
+                            },
+                            child: const Text('Verwijder naam'),
+                          ),
+                          TextButton(
+                            onPressed: () async {
+                              if (_formKey.currentState!.validate()) {
+                                await UserService().updateProfile(
+                                  _controller.text.trim(),
+                                );
+                                _fetchProfileInfo();
+
+                                if (!context.mounted) return;
+                                Navigator.of(context).pop();
+                              }
+                            },
+                            child: const Text('Wijzig naam'),
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                },
               ),
             ],
-            Text(
-              "Email: ${_profile!.email}",
-              style: const TextStyle(
-                fontSize: 20,
-              ),
+            ListTile(
+              leading: const Icon(Icons.email),
+              trailing: const Icon(Icons.chevron_right),
+              title: Text(_profile!.email ?? ""),
             ),
           ],
-          const SizedBox(height: 20),
-        ],
-        InkWell(
-          onTap: () async {
-            showDialog(
-              context: context,
-              builder: (BuildContext context) {
-                return AlertDialog(
-                  title: const Text('Enter your name'),
-                  content: Form(
-                    key: _formKey,
-                    child: TextFormField(
-                      controller: _controller,
-                      decoration: const InputDecoration(
-                        labelText: 'Name',
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Name cannot be empty';
-                        }
-
-                        String pattern = r'^[A-Za-z\s]+$';
-                        RegExp regex = RegExp(pattern);
-
-                        if (!regex.hasMatch(value)) {
-                          return 'Name cannot consist of numbers or special characters';
-                        }
-                        return null;
-                      },
-                    ),
-                  ),
-                  actions: <Widget>[
-                    TextButton(
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                      child: const Text('Cancel'),
-                    ),
-                    TextButton(
-                      onPressed: () async {
-                        await UserService().updateProfile(
-                          "",
-                        );
-                        _fetchProfileInfo();
-
-                        if (!context.mounted) return;
-                        Navigator.of(context).pop();
-                      },
-                      child: const Text('Remove name'),
-                    ),
-                    TextButton(
-                      onPressed: () async {
-                        if (_formKey.currentState!.validate()) {
-                          await UserService().updateProfile(
-                            _controller.text.trim(),
-                          );
-                          _fetchProfileInfo();
-
-                          if (!context.mounted) return;
-                          Navigator.of(context).pop();
-                        }
-                      },
-                      child: const Text('Update name'),
-                    ),
-                  ],
-                );
-              },
-            );
-          },
-          child: Container(
-            decoration: const BoxDecoration(
-              borderRadius: BorderRadius.all(Radius.circular(20)),
-              color: Colors.grey,
-            ),
-            margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-            padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
-            height: 70,
-            width: double.maxFinite,
-            child: const Padding(
-              padding: EdgeInsets.all(15.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "Update account",
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
+          const Divider(),
+          const SizedBox(height: 10),
+          const Text(
+            "Legal",
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
             ),
           ),
-        ),
-        InkWell(
-          onTap: () {
-            // TODO: Add logout functionality
-          },
-          child: Container(
-            decoration: const BoxDecoration(
-              borderRadius: BorderRadius.all(Radius.circular(20)),
-              color: Colors.grey,
-            ),
-            margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-            padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
-            height: 70,
-            width: double.maxFinite,
-            child: const Padding(
-              padding: EdgeInsets.all(15.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
+          const SizedBox(height: 10),
+          const ListTile(
+            leading: Icon(Icons.policy),
+            trailing: Icon(Icons.chevron_right),
+            title: Text("Privacy policy"),
+          ),
+          const ListTile(
+            leading: Icon(Icons.question_answer),
+            trailing: Icon(Icons.chevron_right),
+            title: Text("FAQ"),
+          ),
+          const ListTile(
+            leading: Icon(Icons.book),
+            trailing: Icon(Icons.chevron_right),
+            title: Text("Terms & Conditions"),
+          ),
+          const Divider(),
+          const SizedBox(height: 10),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    foregroundColor: Colors.white,
+                    backgroundColor: CustomColors.primary,
+                  ),
+                  onPressed: () async {
+                    AuthService().logout();
+                  },
+                  child: const Text(
                     "Uitloggen",
                     style: TextStyle(
-                      fontSize: 20,
+                      fontSize: 18,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                ],
+                ),
               ),
-            ),
+              const SizedBox(width: 10),
+            ],
           ),
-        ),
-        InkWell(
-          onTap: () {
-            // TODO: Add account deletion functionality
-          },
-          child: Container(
-            decoration: const BoxDecoration(
-              borderRadius: BorderRadius.all(Radius.circular(20)),
-              color: Colors.grey,
-            ),
-            margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-            padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
-            height: 70,
-            width: double.maxFinite,
-            child: const Padding(
-              padding: EdgeInsets.all(15.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "Verwijder je account",
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
+        ],
       ],
     );
   }

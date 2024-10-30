@@ -52,6 +52,16 @@ class AuthService {
     }
   }
 
+  Future<void> logout() async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      prefs.remove('bearer_token');
+    } catch (e) {
+      debugPrint('Failed to remove bearer token: $e');
+      throw Exception('Failed to remove bearer token: $e');
+    }
+  }
+
   Future<String?> getBearerToken() async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
