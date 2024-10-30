@@ -28,7 +28,6 @@ class DetailedWikiViewState extends State<DetailedWikiView> {
 
   Future<void> _initPlayer() async {
     await player.setSource(AssetSource('mp3/example.mp3'));
-    await player.resume();
   }
 
   @override

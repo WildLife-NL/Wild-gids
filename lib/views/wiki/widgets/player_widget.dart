@@ -35,8 +35,8 @@ class _PlayerWidgetState extends State<PlayerWidget> {
   @override
   void initState() {
     super.initState();
-    // Use initial values from player
-    _playerState = PlayerState.paused;
+    _playerState = player.state;
+
     player.getDuration().then((value) {
       setState(() {
         _duration = value;
@@ -52,8 +52,6 @@ class _PlayerWidgetState extends State<PlayerWidget> {
 
   @override
   void setState(VoidCallback fn) {
-    // Subscriptions only can be closed asynchronously,
-    // therefore events can occur after widget has been disposed.
     if (mounted) {
       super.setState(fn);
     }
@@ -144,9 +142,9 @@ class _PlayerWidgetState extends State<PlayerWidget> {
       setState(() => _duration = duration);
     });
 
-    _positionSubscription = player.onPositionChanged.listen(
-      (p) => setState(() => _position = p),
-    );
+    _positionSubscription = player.onPositionChanged.listen((p) {
+      setState(() => _position = p);
+    });
 
     _playerCompleteSubscription = player.onPlayerComplete.listen((event) {
       setState(() {
