@@ -14,10 +14,17 @@ class WikiView extends StatefulWidget {
 class WikiViewState extends State<WikiView> {
   final TextEditingController _searchController = TextEditingController();
   List<Species> _species = [];
+  final List<Species> _filteredSpecies = [];
 
   void _performSearch(String query) {
-    debugPrint('Search query: $query');
-    // TODO: Add functionality
+    _filteredSpecies.clear();
+    for (var spec in _species) {
+      if (spec.name.toLowerCase().contains(query.toLowerCase()) ||
+          spec.commonName.toLowerCase().contains(query.toLowerCase())) {
+        _filteredSpecies.add(spec);
+      }
+    }
+    setState(() {});
   }
 
   List<String> categories = [
@@ -62,7 +69,7 @@ class WikiViewState extends State<WikiView> {
                         hintStyle: TextStyle(color: Colors.black54),
                       ),
                       style: const TextStyle(color: Colors.black),
-                      onSubmitted: _performSearch,
+                      onChanged: _performSearch,
                     ),
                   ),
                 ),
@@ -129,11 +136,17 @@ class WikiViewState extends State<WikiView> {
                   crossAxisCount: 2,
                   mainAxisSpacing: 10,
                   crossAxisSpacing: 10,
-                  children: _species.asMap().entries.map((entry) {
-                    int index = entry.key;
-                    Species species = entry.value;
-                    return _buildTile(species, index);
-                  }).toList(),
+                  children: _searchController.text.isNotEmpty
+                      ? _filteredSpecies.asMap().entries.map((entry) {
+                          int index = entry.key;
+                          Species species = entry.value;
+                          return _buildTile(species, index);
+                        }).toList()
+                      : _species.asMap().entries.map((entry) {
+                          int index = entry.key;
+                          Species species = entry.value;
+                          return _buildTile(species, index);
+                        }).toList(),
                 ),
               ),
             ),

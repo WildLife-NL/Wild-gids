@@ -1,5 +1,6 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
+import 'package:wildgids/config/theme/custom_colors.dart';
 import 'package:wildgids/widgets/bullet_list.dart';
 import 'package:wildgids/views/wiki/widgets/player_widget.dart';
 import 'package:wildlife_api_connection/models/species.dart';
@@ -36,9 +37,17 @@ class DetailedWikiViewState extends State<DetailedWikiView> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        title: Text(widget.species.commonName),
+        title: Text(
+          "${widget.species.commonName} - ${widget.species.name}",
+          style: const TextStyle(
+            color: CustomColors.primary,
+          ),
+        ),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          icon: const Icon(
+            Icons.arrow_back,
+            color: CustomColors.primary,
+          ),
           onPressed: () {
             Navigator.of(context).pop();
           },

@@ -129,10 +129,8 @@ class CustomTheme {
       ),
 
       // Colors
-      primaryColor: CustomColors.primary,
 
-      // Background
-      scaffoldBackgroundColor: CustomColors.light700,
+      primaryColor: CustomColors.primary,
     );
   }
 }
