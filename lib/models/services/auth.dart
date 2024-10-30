@@ -2,7 +2,7 @@
 
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:wildlife_api_connection/api_client.dart';
+import 'package:wildgids/config/app_config.dart';
 import 'package:wildlife_api_connection/auth_api.dart';
 import 'package:wildlife_api_connection/models/user.dart';
 
@@ -11,7 +11,7 @@ class AuthService {
 
   AuthService() {
     _authApi = AuthApi(
-      ApiClient("https://wildlifenl-uu-michi011.apps.cl01.cp.its.uu.nl/auth"),
+      AppConfig.shared.apiClient,
     );
   }
   AuthService.test(AuthApi authApi) {

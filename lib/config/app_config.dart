@@ -1,5 +1,6 @@
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:wildgids/models/enums/flavor.dart';
+import 'package:wildlife_api_connection/api_client.dart';
 
 Flavor getFlavorByPackageName(String packageName) {
   if (packageName == 'com.example.wildeBuren.development') {
@@ -11,8 +12,9 @@ Flavor getFlavorByPackageName(String packageName) {
 }
 
 class AppConfig {
-  String baseUrl = dotenv.get('PROD_BASE_URL');
+  ApiClient apiClient = ApiClient('');
   Flavor flavor = Flavor.production;
+  String displayNameApp = 'Wildgids';
 
   static AppConfig shared = AppConfig.create();
 
@@ -21,15 +23,17 @@ class AppConfig {
       case Flavor.development:
         return shared = AppConfig(
           flavor,
-          dotenv.get('DEV_BASE_URL'),
+          ApiClient(dotenv.get('DEV_BASE_URL')),
+          'Wildgids - Development',
         );
       case Flavor.production:
         return shared = AppConfig(
           flavor,
-          dotenv.get('PROD_BASE_URL'),
+          ApiClient(dotenv.get('PROD_BASE_URL')),
+          'Wildgids',
         );
     }
   }
 
-  AppConfig(this.flavor, this.baseUrl);
+  AppConfig(this.flavor, this.apiClient, this.displayNameApp);
 }
