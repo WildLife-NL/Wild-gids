@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wildgids/config/app_config.dart';
 import 'package:wildgids/services/auth.dart';
 import 'package:wildgids/views/login/verfication.dart';
 import 'package:wildgids/widgets/custom_scaffold.dart';
@@ -77,7 +78,8 @@ class LoginViewState extends State<LoginView> {
                   onPressed: () async {
                     if (_formKey.currentState!.validate()) {
                       final email = _emailController.text;
-                      await widget.authService.authenticate(email, "");
+                      await widget.authService
+                          .authenticate(email, AppConfig.shared.displayNameApp);
 
                       if (!context.mounted) return;
                       Navigator.push(
