@@ -23,6 +23,7 @@ class CustomColors {
   static const dark800 = Color(0xFF222222);
   static const dark700 = Color(0xFF2E2E2E);
   static const dark500 = Color(0xFF545454);
+  static const dark200 = Color(0xFF040316);
 
   // Light Colors
   static const light700 = Color(0xF2F2F2F2);
