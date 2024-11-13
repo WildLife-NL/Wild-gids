@@ -6,7 +6,7 @@ Flavor getFlavorByPackageName(String packageName) {
   if (packageName == 'com.example.wildeBuren.development') {
     return Flavor.development;
   } else {
-    //com.example.wildeBuren
+    //com.example.wildGids
     return Flavor.production;
   }
 }
