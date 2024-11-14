@@ -19,7 +19,9 @@ class ReportingCardView extends StatefulWidget {
     String? description,
     Species? species,
     LatLng? location,
+    String? animalSpecies,
   ) onDataChanged;
+  final String? animalSpecies;
   final Species? species;
   final InteractionType? interactionType;
   final LatLng? location;
@@ -32,6 +34,7 @@ class ReportingCardView extends StatefulWidget {
     required this.buttonText,
     required this.onPressed,
     required this.onDataChanged,
+    this.animalSpecies,
     this.species,
     this.interactionType,
     this.location,
@@ -47,6 +50,7 @@ class ReportingCardViewState extends State<ReportingCardView> {
 
   String? _description;
   LatLng? _currentLocation;
+  String? _animalSpecies;
   Species? _selectedSpecies;
 
   final TextEditingController _controller = TextEditingController();
@@ -93,6 +97,7 @@ class ReportingCardViewState extends State<ReportingCardView> {
       _description,
       _selectedSpecies,
       LatLng(_currentLocation!.latitude, _currentLocation!.longitude),
+      _animalSpecies,
     );
   }
 
@@ -111,6 +116,7 @@ class ReportingCardViewState extends State<ReportingCardView> {
       null,
       _selectedSpecies,
       LatLng(position.latitude, position.longitude),
+      _animalSpecies,
     );
   }
 
@@ -120,7 +126,26 @@ class ReportingCardViewState extends State<ReportingCardView> {
         _selectedSpecies = species;
       });
     }
-    widget.onDataChanged(null, _selectedSpecies, null);
+    widget.onDataChanged(
+      null,
+      _selectedSpecies,
+      null,
+      _animalSpecies,
+    );
+  }
+
+  void _selectAnimalSpecies(String animalSpecies) {
+    if (mounted) {
+      setState(() {
+        _animalSpecies = animalSpecies;
+      });
+    }
+    widget.onDataChanged(
+      null,
+      null,
+      null,
+      _animalSpecies,
+    );
   }
 
   Future<void> _getLocation() async {
@@ -141,6 +166,7 @@ class ReportingCardViewState extends State<ReportingCardView> {
 
   @override
   Widget build(BuildContext context) {
+    _animalSpecies = widget.animalSpecies;
     _selectedSpecies = widget.species;
     _description = widget.description ?? _controller.text;
     _getLocation();
@@ -156,53 +182,70 @@ class ReportingCardViewState extends State<ReportingCardView> {
           ),
         ),
         if (widget.step == 1 || widget.step == 2) ...[
+          const SizedBox(height: 10),
           Expanded(
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.all(15.0),
+            child: GridView.builder(
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: widget.step == 1 ? 3 : 2,
+                crossAxisSpacing: 20.0,
+                mainAxisSpacing: 20.0,
+                childAspectRatio: widget.step == 1 ? 0.80 : 0.8,
+              ),
               itemCount:
                   widget.step == 1 ? animalSpecies.length : _species.length,
               itemBuilder: (BuildContext context, int index) {
-                return Padding(
-                  padding: const EdgeInsets.only(right: 20.0),
-                  child: GestureDetector(
-                    onTap: () {
-                      if (widget.step == 2) _selectSpecies(_species[index]);
-                      widget.onPressed();
-                    },
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
+                return GestureDetector(
+                  onTap: () {
+                    if (widget.step == 1) {
+                      _selectAnimalSpecies(animalSpecies[index]);
+                    } else if (widget.step == 2) {
+                      _selectSpecies(_species[index]);
+                    }
+                    widget.onPressed();
+                  },
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (widget.step == 1) ...[
                         SizedBox(
-                          height: MediaQuery.of(context).size.width * 0.25,
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(15),
-                            child: widget.step == 1
-                                ? SvgPicture.asset(
-                                    animalSpecies[index].toLowerCase() ==
-                                            'knaagdieren'
-                                        ? AssetIcons.knaagdieren
-                                        : animalSpecies[index].toLowerCase() ==
-                                                'roofdieren'
-                                            ? AssetIcons.roofdieren
-                                            : AssetIcons.evenhoevigen)
-                                : Image.asset(
-                                    'assets/images/${_species[index].commonName.toLowerCase().replaceAll(' ', '-')}.jpg',
-                                    fit: BoxFit.cover,
-                                  ),
+                          child: AspectRatio(
+                            aspectRatio: 1,
+                            child: SvgPicture.asset(
+                              animalSpecies[index].toLowerCase() ==
+                                      'knaagdieren'
+                                  ? AssetIcons.knaagdieren
+                                  : animalSpecies[index].toLowerCase() ==
+                                          'roofdieren'
+                                      ? AssetIcons.roofdieren
+                                      : AssetIcons.evenhoevigen,
+                            ),
                           ),
                         ),
-                        const SizedBox(height: 10),
-                        Text(
-                          widget.step == 1
-                              ? animalSpecies[index]
-                              : _species[index].commonName,
-                          style: const TextStyle(
-                            fontSize: 14,
+                      ] else ...[
+                        SizedBox(
+                          child: AspectRatio(
+                            aspectRatio: 1,
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(15),
+                              child: Image.asset(
+                                'assets/images/${_species[index].commonName.toLowerCase().replaceAll(' ', '-')}.jpg',
+                                fit: BoxFit.cover,
+                              ),
+                            ),
                           ),
                         ),
+                        const SizedBox(height: 6),
                       ],
-                    ),
+                      Text(
+                        widget.step == 1
+                            ? animalSpecies[index]
+                            : _species[index].commonName,
+                        style: const TextStyle(
+                          fontSize: 13,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
                   ),
                 );
               },
@@ -241,31 +284,33 @@ class ReportingCardViewState extends State<ReportingCardView> {
               Text("Opmerkingen: ${widget.description}"),
             const SizedBox(height: 10),
           ],
-          SizedBox(
-            height: 300,
-            child: FlutterMap(
-              mapController: MapController(),
-              options: MapOptions(
-                initialCenter: _currentLocation ??
-                    const LatLng(51.25851739912562, 5.622422796819703),
-                initialZoom: 11,
-              ),
-              children: [
-                TileLayer(
-                  urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                  userAgentPackageName: 'com.wildlifenl.wildgids',
+          Expanded(
+            child: SizedBox(
+              child: FlutterMap(
+                mapController: MapController(),
+                options: MapOptions(
+                  initialCenter: _currentLocation ??
+                      const LatLng(51.25851739912562, 5.622422796819703),
+                  initialZoom: 11,
                 ),
-                MarkerLayer(markers: [
-                  Marker(
-                    point: _currentLocation ??
-                        const LatLng(51.25851739912562, 5.622422796819703),
-                    width: 30,
-                    height: 30,
-                    child: SvgPicture.asset(AssetIcons.locationDot),
-                    rotate: true,
+                children: [
+                  TileLayer(
+                    urlTemplate:
+                        'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                    userAgentPackageName: 'com.wildlifenl.wildgids',
                   ),
-                ]),
-              ],
+                  MarkerLayer(markers: [
+                    Marker(
+                      point: _currentLocation ??
+                          const LatLng(51.25851739912562, 5.622422796819703),
+                      width: 30,
+                      height: 30,
+                      child: SvgPicture.asset(AssetIcons.locationDot),
+                      rotate: true,
+                    ),
+                  ]),
+                ],
+              ),
             ),
           ),
           const SizedBox(height: 10),

@@ -45,7 +45,8 @@ class MapViewState extends State<MapView> {
             ),
             backgroundColor: CustomColors.light700,
             builder: (context) => Padding(
-              padding: const EdgeInsets.all(35.0),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 25.0, vertical: 20.0),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -61,7 +62,10 @@ class MapViewState extends State<MapView> {
                         ),
                       ),
                       IconButton(
-                        icon: const Icon(Icons.close),
+                        icon: const Icon(
+                          Icons.close,
+                          color: CustomColors.error,
+                        ),
                         onPressed: () {
                           Navigator.pop(context);
                         },
@@ -71,7 +75,7 @@ class MapViewState extends State<MapView> {
                   Row(
                     children: [
                       Expanded(
-                        child: _buildInterationTypes(_interactionTypes),
+                        child: _buildInteractionTypes(_interactionTypes),
                       ),
                     ],
                   ),
@@ -115,23 +119,20 @@ class MapViewState extends State<MapView> {
     );
   }
 
-  Widget _buildInterationTypes(List<InteractionType> interactionTypes) {
+  Widget _buildInteractionTypes(List<InteractionType> interactionTypes) {
     return SizedBox(
-      height: 150,
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.all(15.0),
-        itemCount: interactionTypes.length,
-        itemBuilder: (BuildContext context, int index) {
-          return Padding(
-            padding: const EdgeInsets.only(right: 20.0),
+      height: 135,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: interactionTypes.map((interactionType) {
+          return Expanded(
             child: GestureDetector(
               onTap: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (context) => ReportingView(
-                      interactionType: interactionTypes[index],
+                      interactionType: interactionType,
                       initialPage: 0,
                     ),
                   ),
@@ -141,6 +142,7 @@ class MapViewState extends State<MapView> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Container(
+                    width: 105,
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(15),
@@ -150,30 +152,24 @@ class MapViewState extends State<MapView> {
                       ),
                     ),
                     child: Padding(
-                      padding: const EdgeInsets.all(10.0),
-                      child: SizedBox(
-                        height: MediaQuery.of(context).size.width * 0.15,
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(15),
-                          child: SvgPicture.asset(
-                            interactionTypes[index].name.toLowerCase() ==
-                                    'waarneming'
-                                ? AssetIcons.waarneming
-                                : interactionTypes[index].name.toLowerCase() ==
-                                        'schademelding'
-                                    ? AssetIcons.schademelding
-                                    : AssetIcons.wildaanrijding,
-                            fit: BoxFit.cover,
-                            placeholderBuilder: (BuildContext context) =>
-                                Container(
-                              color: Colors.grey.shade300,
-                              height: MediaQuery.of(context).size.width * 0.45,
-                              width: MediaQuery.of(context).size.width * 0.45,
-                              child: const Center(
-                                child: Text(
-                                  'Loading...',
-                                  style: TextStyle(color: Colors.grey),
-                                ),
+                      padding: const EdgeInsets.all(20.0),
+                      child: AspectRatio(
+                        aspectRatio: 1,
+                        child: SvgPicture.asset(
+                          interactionType.name.toLowerCase() == 'waarneming'
+                              ? AssetIcons.waarneming
+                              : interactionType.name.toLowerCase() ==
+                                      'schademelding'
+                                  ? AssetIcons.schademelding
+                                  : AssetIcons.wildaanrijding,
+                          fit: BoxFit.cover,
+                          placeholderBuilder: (BuildContext context) =>
+                              Container(
+                            color: Colors.grey.shade300,
+                            child: const Center(
+                              child: Text(
+                                'Loading...',
+                                style: TextStyle(color: Colors.grey),
                               ),
                             ),
                           ),
@@ -181,18 +177,19 @@ class MapViewState extends State<MapView> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 6),
                   Text(
-                    interactionTypes[index].name,
+                    interactionType.name,
                     style: const TextStyle(
-                      fontSize: 14,
+                      fontSize: 13,
                     ),
+                    textAlign: TextAlign.center,
                   ),
                 ],
               ),
             ),
           );
-        },
+        }).toList(),
       ),
     );
   }

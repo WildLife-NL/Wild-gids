@@ -26,6 +26,7 @@ class ReportingView extends StatefulWidget {
 class ReportingViewState extends State<ReportingView> {
   final PageController _pageController = PageController();
   String? _description;
+  String? _selectedAnimalSpecies;
   Species? _selectedSpecies;
   LatLng? _reportLocation;
 
@@ -33,10 +34,12 @@ class ReportingViewState extends State<ReportingView> {
     String? description,
     Species? species,
     LatLng? location,
+    String? animalSpecies,
   ) {
     setState(() {
       _description = description;
       _selectedSpecies = species;
+      _selectedAnimalSpecies = animalSpecies;
       _reportLocation = location;
     });
   }
@@ -56,7 +59,7 @@ class ReportingViewState extends State<ReportingView> {
 
   @override
   Widget build(BuildContext context) {
-    final List<Widget> onboardingPages = [
+    final List<Widget> reportingPages = [
       if (widget.interactionType.id != 2) ...[
         ReportingCardView(
           question:
@@ -73,9 +76,10 @@ class ReportingViewState extends State<ReportingView> {
         ),
         ReportingCardView(
           question:
-              "Welk roofdier hoort bij de ${widget.interactionType.name.toLowerCase()}?",
+              "Welk ${_selectedAnimalSpecies!.substring(0, _selectedAnimalSpecies!.length - 2).toLowerCase()} hoort bij de ${widget.interactionType.name.toLowerCase()}?",
           step: 2,
           buttonText: "Volgende",
+          animalSpecies: _selectedAnimalSpecies,
           onPressed: () {
             _pageController.nextPage(
               duration: Durations.long1,
@@ -87,7 +91,7 @@ class ReportingViewState extends State<ReportingView> {
       ],
       ReportingCardView(
         question:
-            "Is dit de locatie van je ${widget.interactionType.name.toLowerCase()}?",
+            "Dit is de locatie van je ${widget.interactionType.name.toLowerCase()}.",
         step: 3,
         buttonText: "Volgende",
         species: _selectedSpecies,
@@ -103,7 +107,7 @@ class ReportingViewState extends State<ReportingView> {
         ReportingCardView(
           question: "Heb je nog opmerkingen?",
           step: 4,
-          buttonText: "Volgende",
+          buttonText: "Overslaan",
           onPressed: () {
             _pageController.nextPage(
               duration: Durations.long1,
@@ -162,12 +166,13 @@ class ReportingViewState extends State<ReportingView> {
           Expanded(
             child: PageView(
               controller: _pageController,
-              children: onboardingPages,
+              children: reportingPages,
             ),
           ),
+          const SizedBox(height: 10),
           SmoothPageIndicator(
             controller: _pageController,
-            count: onboardingPages.length,
+            count: reportingPages.length,
             effect: const WormEffect(
               activeDotColor: CustomColors.primary,
             ),
