@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:wildgids/config/theme/asset_icons.dart';
@@ -97,6 +98,7 @@ class MapViewState extends State<MapView> {
               'https://tile.openstreetmap.org/{z}/{x}/{y}.png', // OSMF's Tile Server
           userAgentPackageName: 'com.wildlifenl.wildgids',
         ),
+        CurrentLocationLayer(),
         // Display a marker on the map
         MarkerLayer(markers: [
           Marker(
