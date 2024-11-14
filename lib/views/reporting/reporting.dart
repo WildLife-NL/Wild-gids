@@ -142,8 +142,15 @@ class ReportingViewState extends State<ReportingView> {
             Icons.arrow_back,
             color: CustomColors.primary,
           ),
-          onPressed: () {
-            Navigator.of(context).pop();
+          onPressed: () async {
+            if (_pageController.page == 0) {
+              Navigator.of(context).pop();
+            } else {
+              await _pageController.previousPage(
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeOut,
+              );
+            }
           },
         ),
       ),

@@ -66,9 +66,11 @@ class ReportingCardViewState extends State<ReportingCardView> {
 
   void _getSpecies() async {
     var speciesData = await SpeciesService().getAllSpecies();
-    setState(() {
-      _species = speciesData;
-    });
+    if (mounted) {
+      setState(() {
+        _species = speciesData;
+      });
+    }
   }
 
   Future<void> _requestLocationAccess() async {
@@ -82,9 +84,11 @@ class ReportingCardViewState extends State<ReportingCardView> {
   }
 
   Future<void> _updateDescription(String? description) async {
-    setState(() {
-      _description = description;
-    });
+    if (mounted) {
+      setState(() {
+        _description = description;
+      });
+    }
     widget.onDataChanged(
       _description,
       _selectedSpecies,
@@ -97,9 +101,11 @@ class ReportingCardViewState extends State<ReportingCardView> {
       desiredAccuracy: LocationAccuracy.high,
     );
 
-    setState(() {
-      _currentLocation = LatLng(position.latitude, position.longitude);
-    });
+    if (mounted) {
+      setState(() {
+        _currentLocation = LatLng(position.latitude, position.longitude);
+      });
+    }
 
     widget.onDataChanged(
       null,
@@ -109,9 +115,11 @@ class ReportingCardViewState extends State<ReportingCardView> {
   }
 
   void _selectSpecies(Species species) {
-    setState(() {
-      _selectedSpecies = species;
-    });
+    if (mounted) {
+      setState(() {
+        _selectedSpecies = species;
+      });
+    }
     widget.onDataChanged(null, _selectedSpecies, null);
   }
 
@@ -119,14 +127,16 @@ class ReportingCardViewState extends State<ReportingCardView> {
     Position position = await Geolocator.getCurrentPosition(
       desiredAccuracy: LocationAccuracy.high,
     );
-    setState(() {
-      if (widget.location != null) {
-        _currentLocation = LatLng(widget.location!.latitude.toDouble(),
-            widget.location!.longitude.toDouble());
-      } else {
-        _currentLocation = LatLng(position.latitude, position.longitude);
-      }
-    });
+    if (mounted) {
+      setState(() {
+        if (widget.location != null) {
+          _currentLocation = LatLng(widget.location!.latitude.toDouble(),
+              widget.location!.longitude.toDouble());
+        } else {
+          _currentLocation = LatLng(position.latitude, position.longitude);
+        }
+      });
+    }
   }
 
   @override
