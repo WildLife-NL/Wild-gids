@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:wildgids/config/theme/asset_icons.dart';
 import 'package:wildgids/config/theme/custom_colors.dart';
 import 'package:wildgids/services/species.dart';
+import 'package:wildgids/views/reporting/widgets/manager/location.dart';
 import 'package:wildlife_api_connection/models/interaction_type.dart';
 import 'package:wildlife_api_connection/models/species.dart';
 
@@ -65,7 +64,14 @@ class ReportingCardViewState extends State<ReportingCardView> {
   void initState() {
     super.initState();
     _getSpecies();
-    if (widget.step == 3) _requestLocationAccess();
+
+    if (widget.step == 3 || widget.step == 5) {
+      _getLocation();
+    }
+  }
+
+  void _getLocation() async {
+    _currentLocation = await LocationManager().getUserLocation(context);
   }
 
   void _getSpecies() async {
@@ -74,16 +80,6 @@ class ReportingCardViewState extends State<ReportingCardView> {
       setState(() {
         _species = speciesData;
       });
-    }
-  }
-
-  Future<void> _requestLocationAccess() async {
-    PermissionStatus status = await Permission.location.request();
-
-    if (status.isGranted) {
-      await _updateLocation();
-    } else if (status.isPermanentlyDenied) {
-      openAppSettings();
     }
   }
 
@@ -102,20 +98,10 @@ class ReportingCardViewState extends State<ReportingCardView> {
   }
 
   Future<void> _updateLocation() async {
-    Position position = await Geolocator.getCurrentPosition(
-      desiredAccuracy: LocationAccuracy.high,
-    );
-
-    if (mounted) {
-      setState(() {
-        _currentLocation = LatLng(position.latitude, position.longitude);
-      });
-    }
-
     widget.onDataChanged(
       null,
       _selectedSpecies,
-      LatLng(position.latitude, position.longitude),
+      _currentLocation,
       _animalSpecies,
     );
   }
@@ -148,28 +134,11 @@ class ReportingCardViewState extends State<ReportingCardView> {
     );
   }
 
-  Future<void> _getLocation() async {
-    Position position = await Geolocator.getCurrentPosition(
-      desiredAccuracy: LocationAccuracy.high,
-    );
-    if (mounted) {
-      setState(() {
-        if (widget.location != null) {
-          _currentLocation = LatLng(widget.location!.latitude.toDouble(),
-              widget.location!.longitude.toDouble());
-        } else {
-          _currentLocation = LatLng(position.latitude, position.longitude);
-        }
-      });
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     _animalSpecies = widget.animalSpecies;
     _selectedSpecies = widget.species;
     _description = widget.description ?? _controller.text;
-    _getLocation();
 
     return Column(
       children: [

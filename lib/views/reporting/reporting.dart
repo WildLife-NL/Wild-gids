@@ -76,7 +76,7 @@ class ReportingViewState extends State<ReportingView> {
         ),
         ReportingCardView(
           question:
-              "Welk ${_selectedAnimalSpecies!.substring(0, _selectedAnimalSpecies!.length - 2).toLowerCase()} hoort bij de ${widget.interactionType.name.toLowerCase()}?",
+              "Welk ${_selectedAnimalSpecies != null ? _selectedAnimalSpecies!.substring(0, _selectedAnimalSpecies!.length - 2).toLowerCase() : "diersoort"} hoort bij de ${widget.interactionType.name.toLowerCase()}?",
           step: 2,
           buttonText: "Volgende",
           animalSpecies: _selectedAnimalSpecies,
@@ -169,7 +169,7 @@ class ReportingViewState extends State<ReportingView> {
               children: reportingPages,
             ),
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 20),
           SmoothPageIndicator(
             controller: _pageController,
             count: reportingPages.length,
@@ -183,7 +183,7 @@ class ReportingViewState extends State<ReportingView> {
                 curve: Curves.bounceInOut,
               );
             },
-          )
+          ),
         ],
       ),
     );

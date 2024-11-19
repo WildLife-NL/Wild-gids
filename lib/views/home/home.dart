@@ -3,6 +3,7 @@ import 'package:wildgids/config/theme/custom_theme.dart';
 import 'package:wildgids/config/theme/size_setter.dart';
 import 'package:wildgids/views/map/map.dart';
 import 'package:wildgids/views/profile/profile.dart';
+import 'package:wildgids/views/reporting/widgets/manager/location.dart';
 import 'package:wildgids/views/wiki/wiki.dart';
 import 'package:wildgids/views/home/widgets/bottom_navigation_bar_indicator.dart';
 
@@ -22,6 +23,12 @@ class _HomeViewState extends State<HomeView> {
     setState(() {
       selectedIndex = index;
     });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    LocationManager().requestLocationAccess(context);
   }
 
   @override
