@@ -95,7 +95,7 @@ class MapViewState extends State<MapView> {
         TileLayer(
           // Display map tiles from any source
           urlTemplate:
-              'https://tile.openstreetmap.org/{z}/{x}/{y}.png', // OSMF's Tile Server
+              'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', // Esri.WorldImagery
           userAgentPackageName: 'com.wildlifenl.wildgids',
         ),
         CurrentLocationLayer(),
