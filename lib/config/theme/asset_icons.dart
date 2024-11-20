@@ -15,4 +15,26 @@ class AssetIcons {
   static const evenhoevigen = '$_path/animal-species/evenhoevigen.svg';
   static const knaagdieren = '$_path/animal-species/knaagdieren.svg';
   static const roofdieren = '$_path/animal-species/roofdieren.svg';
+
+  static String getInteractionIcon(String name) {
+    switch (name.toLowerCase()) {
+      case 'waarneming':
+        return AssetIcons.waarneming;
+      case 'schademelding':
+        return AssetIcons.schademelding;
+      default:
+        return AssetIcons.wildaanrijding;
+    }
+  }
+
+  static String getAnimalSpeciesIcon(String name) {
+    switch (name.toLowerCase()) {
+      case 'evenhoevigen':
+        return AssetIcons.evenhoevigen;
+      case 'knaagdieren':
+        return AssetIcons.knaagdieren;
+      default:
+        return AssetIcons.roofdieren;
+    }
+  }
 }

@@ -26,6 +26,8 @@ class ReportingCardView extends StatefulWidget {
   final LatLng? location;
   final String? description;
 
+  final Function goToPreviousPage;
+
   const ReportingCardView({
     super.key,
     required this.question,
@@ -33,6 +35,7 @@ class ReportingCardView extends StatefulWidget {
     required this.buttonText,
     required this.onPressed,
     required this.onDataChanged,
+    required this.goToPreviousPage,
     this.animalSpecies,
     this.species,
     this.interactionType,
@@ -53,6 +56,7 @@ class ReportingCardViewState extends State<ReportingCardView> {
   Species? _selectedSpecies;
 
   final TextEditingController _controller = TextEditingController();
+  bool _descriptionNotEmpty = false;
 
   List<String> animalSpecies = [
     "Evenhoevigen",
@@ -65,9 +69,15 @@ class ReportingCardViewState extends State<ReportingCardView> {
     super.initState();
     _getSpecies();
 
-    if (widget.step == 3 || widget.step == 5) {
+    if (widget.step == 3 || widget.step == 4) {
       _getLocation();
     }
+
+    _controller.addListener(() {
+      setState(() {
+        _descriptionNotEmpty = _controller.text.isNotEmpty;
+      });
+    });
   }
 
   void _getLocation() async {
@@ -142,13 +152,56 @@ class ReportingCardViewState extends State<ReportingCardView> {
 
     return Column(
       children: [
-        Text(
-          widget.question,
-          style: const TextStyle(
-            color: CustomColors.primary,
-            fontSize: 18.0,
-            fontWeight: FontWeight.bold,
-          ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            IconButton(
+              icon: const Icon(
+                Icons.arrow_back,
+                size: 28,
+                color: CustomColors.primary,
+              ),
+              onPressed: () {
+                if (widget.interactionType!.id != 2) {
+                  if (widget.step != 1) {
+                    widget.goToPreviousPage(
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.easeInOut,
+                    );
+                  } else {
+                    Navigator.of(context).pop();
+                  }
+                } else {
+                  if (widget.step != 3) {
+                    widget.goToPreviousPage(
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.easeInOut,
+                    );
+                  } else {
+                    Navigator.of(context).pop();
+                  }
+                }
+              },
+            ),
+            Text(
+              widget.question,
+              style: const TextStyle(
+                color: CustomColors.primary,
+                fontSize: 18.0,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            IconButton(
+              icon: const Icon(
+                Icons.cancel,
+                color: Colors.grey,
+                size: 28,
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
         ),
         if (widget.step == 1 || widget.step == 2) ...[
           const SizedBox(height: 10),
@@ -158,7 +211,7 @@ class ReportingCardViewState extends State<ReportingCardView> {
                 crossAxisCount: widget.step == 1 ? 3 : 2,
                 crossAxisSpacing: 20.0,
                 mainAxisSpacing: 20.0,
-                childAspectRatio: widget.step == 1 ? 0.80 : 0.8,
+                childAspectRatio: widget.step == 1 ? 0.75 : 0.8,
               ),
               itemCount:
                   widget.step == 1 ? animalSpecies.length : _species.length,
@@ -176,22 +229,44 @@ class ReportingCardViewState extends State<ReportingCardView> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       if (widget.step == 1) ...[
-                        SizedBox(
-                          child: AspectRatio(
-                            aspectRatio: 1,
-                            child: SvgPicture.asset(
-                              animalSpecies[index].toLowerCase() ==
-                                      'knaagdieren'
-                                  ? AssetIcons.knaagdieren
-                                  : animalSpecies[index].toLowerCase() ==
-                                          'roofdieren'
-                                      ? AssetIcons.roofdieren
-                                      : AssetIcons.evenhoevigen,
-                            ),
+                        Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(15),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.2),
+                                offset: const Offset(0, 4),
+                                blurRadius: 6,
+                                spreadRadius: 1,
+                              ),
+                            ],
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: AspectRatio(
+                                aspectRatio: 1,
+                                child: SvgPicture.asset(
+                                  AssetIcons.getAnimalSpeciesIcon(
+                                    animalSpecies[index].toLowerCase(),
+                                  ),
+                                )),
                           ),
                         ),
                       ] else ...[
-                        SizedBox(
+                        Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(15),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.2),
+                                offset: const Offset(0, 4),
+                                blurRadius: 6,
+                                spreadRadius: 1,
+                              ),
+                            ],
+                          ),
                           child: AspectRatio(
                             aspectRatio: 1,
                             child: ClipRRect(
@@ -203,14 +278,15 @@ class ReportingCardViewState extends State<ReportingCardView> {
                             ),
                           ),
                         ),
-                        const SizedBox(height: 6),
                       ],
+                      const SizedBox(height: 10),
                       Text(
                         widget.step == 1
                             ? animalSpecies[index]
                             : _species[index].commonName,
                         style: const TextStyle(
                           fontSize: 13,
+                          fontWeight: FontWeight.bold,
                         ),
                         textAlign: TextAlign.center,
                       ),
@@ -220,7 +296,7 @@ class ReportingCardViewState extends State<ReportingCardView> {
               },
             ),
           ),
-        ] else if (widget.step == 4) ...[
+        ] else if (widget.step == 3) ...[
           const SizedBox(height: 10),
           TextFormField(
             controller: _controller,
@@ -241,16 +317,97 @@ class ReportingCardViewState extends State<ReportingCardView> {
               _updateDescription(_controller.text);
               widget.onPressed();
             },
-            child: Text(widget.buttonText),
+            child: Text(_descriptionNotEmpty ? "Volgende" : widget.buttonText),
           ),
         ] else ...[
           const SizedBox(height: 10),
-          if (widget.step == 5) ...[
-            Text("Interatie type: ${widget.interactionType!.name}"),
-            if (widget.species != null)
-              Text("Dier: ${widget.species!.commonName}"),
-            if (widget.description != null && widget.description!.isNotEmpty)
-              Text("Opmerkingen: ${widget.description}"),
+          if (widget.step == 4) ...[
+            SizedBox(
+              height: 150,
+              child: GridView.builder(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 3,
+                  crossAxisSpacing: 20.0,
+                  mainAxisSpacing: 20.0,
+                  childAspectRatio: 0.70,
+                ),
+                itemCount: widget.interactionType!.id != 2 ? 3 : 1,
+                itemBuilder: (BuildContext context, int index) {
+                  return Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(15),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.2),
+                              offset: const Offset(0, 4),
+                              blurRadius: 6,
+                              spreadRadius: 1,
+                            ),
+                          ],
+                        ),
+                        child: Padding(
+                          padding: index == 0
+                              ? const EdgeInsets.all(15.0)
+                              : index == 1
+                                  ? const EdgeInsets.all(10.0)
+                                  : const EdgeInsets.all(0),
+                          child: AspectRatio(
+                            aspectRatio: 1,
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(15),
+                              child: widget.interactionType!.id != 2
+                                  ? index == 0
+                                      ? SvgPicture.asset(
+                                          AssetIcons.getInteractionIcon(
+                                              widget.interactionType!.name),
+                                        )
+                                      : index == 1
+                                          ? SvgPicture.asset(
+                                              AssetIcons.getAnimalSpeciesIcon(
+                                                widget.animalSpecies!
+                                                    .toLowerCase(),
+                                              ),
+                                            )
+                                          : Image.asset(
+                                              'assets/images/${widget.species!.commonName.toLowerCase().replaceAll(' ', '-')}.jpg',
+                                              fit: BoxFit.cover,
+                                            )
+                                  : SvgPicture.asset(
+                                      AssetIcons.getInteractionIcon(
+                                          widget.interactionType!.name),
+                                    ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        widget.interactionType!.id != 2
+                            ? index == 0
+                                ? widget.interactionType!.name
+                                : index == 1
+                                    ? widget.animalSpecies ?? ""
+                                    : widget.species!.commonName
+                            : widget.interactionType!.name,
+                        style: const TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  );
+                },
+              ),
+            ),
+          ],
+          const SizedBox(height: 10),
+          if (widget.description != null && widget.description!.isNotEmpty) ...[
+            Text("Opmerkingen: ${widget.description}"),
             const SizedBox(height: 10),
           ],
           Expanded(
@@ -268,30 +425,48 @@ class ReportingCardViewState extends State<ReportingCardView> {
                         'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                     userAgentPackageName: 'com.wildlifenl.wildgids',
                   ),
-                  MarkerLayer(markers: [
-                    Marker(
-                      point: _currentLocation ??
-                          const LatLng(51.25851739912562, 5.622422796819703),
-                      width: 30,
-                      height: 30,
-                      child: SvgPicture.asset(AssetIcons.locationDot),
-                      rotate: true,
-                    ),
-                  ]),
+                  MarkerLayer(
+                    markers: [
+                      Marker(
+                        point: _currentLocation ??
+                            const LatLng(51.25851739912562, 5.622422796819703),
+                        width: 30,
+                        height: 30,
+                        child: SvgPicture.asset(AssetIcons.locationDot),
+                        rotate: true,
+                      ),
+                    ],
+                  ),
                 ],
               ),
             ),
           ),
           const SizedBox(height: 10),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-                foregroundColor: Colors.white,
-                backgroundColor: Theme.of(context).primaryColor),
-            onPressed: () {
-              _updateLocation();
-              widget.onPressed();
-            },
-            child: Text(widget.buttonText),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  foregroundColor: Colors.white,
+                  backgroundColor: CustomColors.error,
+                ),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text("Annuleren"),
+              ),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  foregroundColor: Colors.white,
+                  backgroundColor: CustomColors.primary,
+                ),
+                onPressed: () {
+                  _updateLocation();
+                  widget.onPressed();
+                },
+                child: Text(widget.buttonText),
+              ),
+            ],
           ),
         ],
       ],
