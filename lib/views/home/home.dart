@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:wildgids/config/theme/custom_theme.dart';
 import 'package:wildgids/config/theme/size_setter.dart';
+import 'package:wildgids/services/animal.dart';
 import 'package:wildgids/views/map/map.dart';
 import 'package:wildgids/views/profile/profile.dart';
 import 'package:wildgids/views/wiki/wiki.dart';
@@ -31,10 +32,10 @@ class _HomeViewState extends State<HomeView> {
         children: [
           IndexedStack(
             index: selectedIndex,
-            children: const [
-              MapView(),
-              WikiView(),
-              ProfileView(),
+            children: [
+              MapView(animalService: AnimalService()),
+              const WikiView(),
+              const ProfileView(),
             ],
           ),
         ],
