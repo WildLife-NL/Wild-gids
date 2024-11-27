@@ -20,12 +20,13 @@ class MapView extends StatefulWidget {
 }
 
 class MapViewState extends State<MapView> {
+  // Set global properties
   late Timer _timer;
   List<Marker> _markers = [];
   LatLng? _initialPosition;
-
   final MapController _mapController = MapController();
 
+  // On initial state, set the initial location and start fetching markers with a timer
   @override
   void initState() {
     super.initState();
@@ -40,11 +41,13 @@ class MapViewState extends State<MapView> {
     super.dispose();
   }
 
+  // Set initial location for map bounds and camera center
   void _setInitialLocation() async {
     Position position = await _determinePosition();
     _initialPosition = LatLng(position.latitude, position.longitude);
   }
 
+  // Start timer to retrieve/upload location and fetch markers
   void _startTimer() async {
     // Set timer to retrieve location every 10 seconds
     _timer = Timer.periodic(const Duration(seconds: 10), (timer) async {
@@ -83,10 +86,12 @@ class MapViewState extends State<MapView> {
     return await Geolocator.getCurrentPosition();
   }
 
+  // TODO: Send location to the server
   Future<void> _sendLocation(Position position) async {
     debugPrint('Location: ${position.latitude}, ${position.longitude}');
   }
 
+  // Fetch markers from the server using the animal service
   void _fetchMarkers() async {
     try {
       // Simulating API call
@@ -94,11 +99,12 @@ class MapViewState extends State<MapView> {
           await widget.animalService.getAllAnimalTrackings();
       debugPrint('Animal trackings length: ${animalTrackings.length}');
 
+      // Marker options
       List<Marker> newMarkers = animalTrackings.map((tracking) {
         return Marker(
           width: 40.0,
           height: 40.0,
-          rotate: true,
+          rotate: true, // Keeps markers upright when rotating the map
           point:
               LatLng(tracking.location.latitude, tracking.location.longitude),
           child: const Icon(
@@ -109,6 +115,7 @@ class MapViewState extends State<MapView> {
         );
       }).toList();
 
+      // Set the new markers
       setState(() {
         _markers = newMarkers;
       });
@@ -117,12 +124,15 @@ class MapViewState extends State<MapView> {
     }
   }
 
+  // Build the map view with the current location and markers
   @override
   Widget build(BuildContext context) {
+    // If the initial position is not set, show a loading indicator
     if (_initialPosition == null) {
       return const Center(child: CircularProgressIndicator());
     }
 
+    // Set bounds for the camera constraint using initial position (Make sure this is not done dynamically which may crash because of camera constraint #https://github.com/fleaflet/flutter_map/issues/1760)
     final bounds = LatLngBounds(
       LatLng(
           _initialPosition!.latitude - 0.1, _initialPosition!.longitude - 0.1),
@@ -130,6 +140,7 @@ class MapViewState extends State<MapView> {
           _initialPosition!.latitude + 0.1, _initialPosition!.longitude + 0.1),
     );
 
+    // Map settings
     return FlutterMap(
       mapController: _mapController,
       options: MapOptions(
@@ -140,12 +151,13 @@ class MapViewState extends State<MapView> {
         cameraConstraint: CameraConstraint.containCenter(bounds: bounds),
       ),
       children: [
+        // Used to display the map tiles, in this case the World Imagery tiles (Check out other free tiles #https://alexurquhart.github.io/free-tiles/)
         TileLayer(
           urlTemplate:
               'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
           userAgentPackageName: 'com.wildlifenl.wildgids',
         ),
-        CurrentLocationLayer(),
+        CurrentLocationLayer(), // Used to display the current location of the user (blue dot)
         MarkerLayer(markers: _markers),
       ],
     );
