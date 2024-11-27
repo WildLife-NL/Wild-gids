@@ -44,7 +44,10 @@ class MapViewState extends State<MapView> {
   // Set initial location for map bounds and camera center
   void _setInitialLocation() async {
     Position position = await _determinePosition();
-    _initialPosition = LatLng(position.latitude, position.longitude);
+
+    setState(() {
+      _initialPosition = LatLng(position.latitude, position.longitude);
+    });
   }
 
   // Start timer to retrieve/upload location and fetch markers
