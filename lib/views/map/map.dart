@@ -4,8 +4,11 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:wildgids/config/theme/asset_icons.dart';
 import 'package:wildgids/services/animal.dart';
 import 'package:wildlife_api_connection/models/animal_tracking.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:wildlife_api_connection/models/species.dart';
 
 class MapView extends StatefulWidget {
   final AnimalService animalService;
@@ -104,18 +107,34 @@ class MapViewState extends State<MapView> {
 
       // Marker options
       List<Marker> newMarkers = animalTrackings.map((tracking) {
+        var animalMarkerOptions = _getAnimalMarkerOptions(tracking.species);
         return Marker(
-          width: 40.0,
-          height: 40.0,
-          rotate: true, // Keeps markers upright when rotating the map
-          point:
-              LatLng(tracking.location.latitude, tracking.location.longitude),
-          child: const Icon(
-            Icons.location_on,
-            color: Colors.lightGreen,
-            size: 40.0,
-          ),
-        );
+            width: animalMarkerOptions.size,
+            height: animalMarkerOptions.size,
+            rotate: true, // Keeps markers upright when rotating the map
+            point:
+                LatLng(tracking.location.latitude, tracking.location.longitude),
+            child: GestureDetector(
+              onTap: () {
+                // Show dialog when clicking on a marker
+                showDialog(
+                    builder: (_) => AlertDialog(
+                            title: const Text("Caught"),
+                            content: Text("Clicked on ${tracking.name}"),
+                            actions: [
+                              TextButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: const Text("Close"))
+                            ]),
+                    context: context,
+                    barrierDismissible: true);
+              },
+              child: SvgPicture.asset(animalMarkerOptions.svgPath,
+                  colorFilter: ColorFilter.mode(
+                      animalMarkerOptions.color, BlendMode.srcIn)),
+            ));
       }).toList();
 
       // Set the new markers
@@ -164,5 +183,41 @@ class MapViewState extends State<MapView> {
         MarkerLayer(markers: _markers),
       ],
     );
+  }
+}
+
+// Struct for animal marker
+class AnimalMarker {
+  final String svgPath;
+  final Color color;
+  final double size;
+
+  AnimalMarker({
+    required this.svgPath,
+    required this.color,
+    required this.size,
+  });
+}
+
+// Function to determine icon based on animal type
+AnimalMarker _getAnimalMarkerOptions(Species species) {
+  switch (species.id) {
+    case '2e6e75fb-4888-4c8d-81c6-ab31c63a7ecb':
+      return AnimalMarker(
+          svgPath: AssetIcons.bison, color: Colors.lightGreen, size: 40);
+    case '79952c1b-3f43-4d6e-9ff0-b6057fda6fc1':
+      return AnimalMarker(
+          svgPath: AssetIcons.scottishHighlander,
+          color: Colors.lightGreen,
+          size: 40);
+    case '28775ecb-1af6-4b22-a87a-e15b1999d55c':
+      return AnimalMarker(
+          svgPath: AssetIcons.wildBoar, color: Colors.lightGreen, size: 50);
+    case 'cf83db9d-dab7-4542-bc00-08c87d1da68d':
+      return AnimalMarker(
+          svgPath: AssetIcons.wolf, color: Colors.red.shade400, size: 40);
+    default:
+      return AnimalMarker(
+          svgPath: AssetIcons.universal, color: Colors.lightGreen, size: 40);
   }
 }
