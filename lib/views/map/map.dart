@@ -6,16 +6,19 @@ import 'package:latlong2/latlong.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:wildgids/config/theme/asset_icons.dart';
 import 'package:wildgids/services/animal.dart';
+import 'package:wildgids/services/tracking.dart';
 import 'package:wildlife_api_connection/models/animal_tracking.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:wildlife_api_connection/models/species.dart';
 
 class MapView extends StatefulWidget {
   final AnimalService animalService;
+  final TrackingService trackingService;
 
   const MapView({
     super.key,
     required this.animalService,
+    required this.trackingService,
   });
 
   @override
@@ -24,7 +27,8 @@ class MapView extends StatefulWidget {
 
 class MapViewState extends State<MapView> {
   // Set global properties
-  late Timer _timer;
+  late Timer _animalTimer;
+  late Timer _trackingTimer;
   List<Marker> _markers = [];
   LatLng? _initialPosition;
   final MapController _mapController = MapController();
@@ -34,13 +38,17 @@ class MapViewState extends State<MapView> {
   void initState() {
     super.initState();
     _setInitialLocation();
-    _startTimer();
+    _startTimers();
+
+    // Fetch markers and send tracking on initial load
+    _sendTracking();
     _fetchMarkers();
   }
 
   @override
   void dispose() {
-    _timer.cancel();
+    _animalTimer.cancel();
+    _trackingTimer.cancel();
     super.dispose();
   }
 
@@ -54,12 +62,14 @@ class MapViewState extends State<MapView> {
   }
 
   // Start timer to retrieve/upload location and fetch markers
-  void _startTimer() async {
+  void _startTimers() async {
     // Set timer to retrieve location every 10 seconds
-    _timer = Timer.periodic(const Duration(seconds: 10), (timer) async {
-      Position position = await _determinePosition();
-      _sendLocation(position);
+    _animalTimer = Timer.periodic(const Duration(seconds: 10), (timer) async {
       _fetchMarkers();
+    });
+
+    _trackingTimer = Timer.periodic(const Duration(minutes: 1), (timer) async {
+      _sendTracking();
     });
   }
 
@@ -90,11 +100,6 @@ class MapViewState extends State<MapView> {
 
     // Get the current location with granted permissions
     return await Geolocator.getCurrentPosition();
-  }
-
-  // TODO: Send location to the server
-  Future<void> _sendLocation(Position position) async {
-    debugPrint('Location: ${position.latitude}, ${position.longitude}');
   }
 
   // Fetch markers from the server using the animal service
@@ -144,6 +149,13 @@ class MapViewState extends State<MapView> {
     } catch (e) {
       debugPrint('Error fetching markers: $e');
     }
+  }
+
+  void _sendTracking() async {
+    Position position = await _determinePosition();
+    widget.trackingService
+        .sendTrackingReading(LatLng(position.latitude, position.longitude));
+    debugPrint('Sent tracking reading');
   }
 
   // Build the map view with the current location and markers
