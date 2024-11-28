@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:wildgids/config/theme/size_setter.dart';
 import 'package:wildgids/services/interaction_type.dart';
 import 'package:wildgids/views/home/widgets/navbar_item.dart';
@@ -6,14 +7,19 @@ import 'package:wildgids/views/notifications/notifications.dart';
 import 'package:wildgids/views/map/map.dart';
 import 'package:wildgids/views/profile/profile.dart';
 import 'package:wildgids/views/reporting/widgets/manager/location.dart';
+import 'package:wildgids/views/reporting/widgets/snackbar_with_progress_bar.dart';
 import 'package:wildgids/views/wiki/wiki.dart';
 import 'package:wildgids/views/home/widgets/bottom_navigation_bar_indicator.dart';
+import 'package:wildlife_api_connection/models/interaction.dart';
 import 'package:wildlife_api_connection/models/interaction_type.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({
     super.key,
+    this.interaction,
   });
+
+  final Interaction? interaction;
 
   @override
   State<HomeView> createState() => _HomeViewState();
@@ -34,6 +40,21 @@ class _HomeViewState extends State<HomeView> {
     super.initState();
     LocationManager().requestLocationAccess(context);
     _getInteractionTypes();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      if (widget.interaction != null &&
+          widget.interaction!.questionnaire != null) {
+        SnackBarWithProgress.show(
+          context: context,
+          questionnaire: widget.interaction!.questionnaire!,
+        );
+      }
+    });
   }
 
   Future<void> _getInteractionTypes() async {

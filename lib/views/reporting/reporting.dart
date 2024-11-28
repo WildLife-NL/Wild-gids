@@ -3,7 +3,9 @@ import 'package:latlong2/latlong.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:wildgids/config/theme/custom_colors.dart';
 import 'package:wildgids/services/interation.dart';
+import 'package:wildgids/views/home/home.dart';
 import 'package:wildgids/views/reporting/reporting_card.dart';
+import 'package:wildlife_api_connection/models/interaction.dart';
 import 'package:wildlife_api_connection/models/interaction_type.dart';
 import 'package:wildlife_api_connection/models/location.dart';
 import 'package:wildlife_api_connection/models/species.dart';
@@ -69,18 +71,19 @@ class ReportingViewState extends State<ReportingView> {
     });
   }
 
-  void _submitReport() {
+  Future<Interaction?> _submitReport() async {
     if (_selectedSpecies != null && _reportLocation != null) {
-      InteractionService().createInteraction(
+      return InteractionService().createInteraction(
         _description ?? "",
         Location(
-          latitude: _reportLocation!.latitude.toInt(),
-          longitude: _reportLocation!.longitude.toInt(),
+          latitude: _reportLocation?.latitude ?? 0,
+          longitude: _reportLocation?.longitude ?? 0,
         ),
-        _selectedSpecies!.id,
+        _selectedSpecies?.id ?? "",
         widget.interactionType.id,
       );
     }
+    return null;
   }
 
   List<Widget> _buildReportingPages() {
@@ -136,9 +139,21 @@ class ReportingViewState extends State<ReportingView> {
         step: 4,
         buttonText: "Rapporteer",
         goToPreviousPage: _pageController.previousPage,
-        onPressed: () {
-          _submitReport();
-          Navigator.pop(context);
+        onPressed: () async {
+          final interaction = await _submitReport();
+          if (interaction != null && interaction.questionnaire != null) {
+            if (mounted) {
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => HomeView(
+                    interaction: interaction,
+                  ),
+                ),
+                (route) => false,
+              );
+            }
+          }
         },
         location: _reportLocation,
         species: _selectedSpecies,

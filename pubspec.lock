@@ -1134,8 +1134,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "5b2d992"
-      resolved-ref: "5b2d99242627fc0a56d6fb40ed211df809a441c8"
+      ref: "1dafe4c"
+      resolved-ref: "1dafe4ca6394e114845716824e506bc4c09b3359"
       url: "git@github.com:WildLifeNLApps/Wildlife-api-connection.git"
     source: git
     version: "0.0.1"
