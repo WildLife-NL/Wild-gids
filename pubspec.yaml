@@ -36,7 +36,7 @@ dependencies:
   wildlife_api_connection:
     git:
       url: git@github.com:WildLifeNLApps/Wildlife-api-connection.git
-      ref: "81f8a9d"
+      ref: "2593dd1"
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -47,10 +47,13 @@ dependencies:
   flutter_map: ^7.0.2
   latlong2: ^0.9.1
   url_launcher: ^6.3.1
-  flutter_svg: ^2.0.10+1
+  flutter_svg: ^2.0.13
   provider: ^6.1.2
   flutter_staggered_grid_view: ^0.7.0
   audioplayers: ^6.1.0
+  geolocator: ^12.0.0
+  permission_handler: ^11.3.1
+  smooth_page_indicator: ^1.2.0+3
 
 dev_dependencies:
   flutter_test:
@@ -80,6 +83,9 @@ flutter:
   assets:
     - .env
     - assets/icons/
+    - assets/icons/interaction-types/
+    - assets/icons/animal-species/
+    - assets/icons/numbers/
     - assets/images/
     - assets/mp3/
 
