@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:wildlife_api_connection/api_client.dart';
+import 'package:wildgids/config/app_config.dart';
 import 'package:wildlife_api_connection/interaction_type_api.dart';
 import 'package:wildlife_api_connection/models/interaction_type.dart';
 
 class InteractionTypeService {
   final _interactionTypeApi = InteractionTypeApi(
-    ApiClient(
-        "https://wildlifenl-uu-michi011.apps.cl01.cp.its.uu.nl/interactionTypes"),
+    AppConfig.shared.apiClient,
   );
 
   Future<List<InteractionType>> getAllInteractionTypes() {

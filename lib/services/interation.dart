@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:wildlife_api_connection/api_client.dart';
+import 'package:wildgids/config/app_config.dart';
 import 'package:wildlife_api_connection/interaction_api.dart';
 import 'package:wildlife_api_connection/models/interaction.dart';
 import 'package:wildlife_api_connection/models/location.dart';
 
 class InteractionService {
   final _interactionApi = InteractionApi(
-    ApiClient(
-        "https://wildlifenl-uu-michi011.apps.cl01.cp.its.uu.nl/interaction"),
+    AppConfig.shared.apiClient,
   );
 
   Future<Interaction> createInteraction(

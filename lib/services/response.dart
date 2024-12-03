@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:wildlife_api_connection/api_client.dart';
+import 'package:wildgids/config/app_config.dart';
 import 'package:wildlife_api_connection/response_api.dart';
 
 class ResponseService {
   final _responseApi = ResponseApi(
-    ApiClient(
-        "https://wildlifenl-uu-michi011.apps.cl01.cp.its.uu.nl/interaction"),
+    AppConfig.shared.apiClient,
   );
 
   Future<void> createResponse(
