@@ -1,18 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:wildgids/config/theme/custom_colors.dart';
+import 'package:wildgids/services/response.dart';
 import 'package:wildgids/views/home/home.dart';
 import 'package:wildgids/views/reporting/questionnaire/questionnaire_card.dart';
 import 'package:wildgids/widgets/custom_scaffold.dart';
-import 'package:wildlife_api_connection/models/answer.dart';
+import 'package:wildlife_api_connection/models/interaction.dart';
+import 'package:wildlife_api_connection/models/question.dart';
 import 'package:wildlife_api_connection/models/questionnaire.dart';
 
 class QuestionnaireView extends StatefulWidget {
+  final Interaction interaction;
   final Questionnaire questionnaire;
   final int initialPage;
 
   const QuestionnaireView({
     super.key,
+    required this.interaction,
     required this.questionnaire,
     required this.initialPage,
   });
@@ -23,7 +27,7 @@ class QuestionnaireView extends StatefulWidget {
 
 class QuestionnaireViewState extends State<QuestionnaireView> {
   final PageController _pageController = PageController();
-  final Map<int, List<Answer>> _answers = {};
+  final Map<Question, List<String>> _answers = {};
 
   @override
   void initState() {
@@ -45,6 +49,24 @@ class QuestionnaireViewState extends State<QuestionnaireView> {
                   curve: Curves.easeInOut,
                 );
               } else {
+                if (_answers.isNotEmpty) {
+                  for (var entry in _answers.entries) {
+                    final question = entry.key;
+                    final answers = entry.value;
+
+                    final questionId = question.id;
+
+                    for (var answer in answers) {
+                      ResponseService().createResponse(
+                        widget.interaction.id,
+                        questionId,
+                        question.allowMultipleResponse ? "" : answer,
+                        question.allowMultipleResponse ? answer : "",
+                      );
+                    }
+                  }
+                }
+
                 Navigator.pushAndRemoveUntil(
                   context,
                   MaterialPageRoute(
@@ -55,9 +77,9 @@ class QuestionnaireViewState extends State<QuestionnaireView> {
               }
             },
             goToPreviousPage: _pageController.previousPage,
-            onAnswer: (int questionIndex, List<Answer> answer) {
+            onAnswer: (Question question, List<String> answer) {
               setState(() {
-                _answers[questionIndex] = answer;
+                _answers[question] = answer;
               });
             },
             buttonText: i == widget.questionnaire.questions!.length - 1

@@ -51,6 +51,7 @@ class _HomeViewState extends State<HomeView> {
           widget.interaction!.questionnaire != null) {
         SnackBarWithProgress.show(
           context: context,
+          interaction: widget.interaction!,
           questionnaire: widget.interaction!.questionnaire!,
         );
       }

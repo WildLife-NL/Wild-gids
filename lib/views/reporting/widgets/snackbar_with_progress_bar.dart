@@ -3,6 +3,7 @@ import 'dart:async';
 
 import 'package:wildgids/config/theme/custom_colors.dart';
 import 'package:wildgids/views/reporting/questionnaire/questionnaire.dart';
+import 'package:wildlife_api_connection/models/interaction.dart';
 import 'package:wildlife_api_connection/models/questionnaire.dart';
 
 class SnackBarWithProgress extends StatefulWidget {
@@ -19,6 +20,7 @@ class SnackBarWithProgress extends StatefulWidget {
 
   static void show({
     required BuildContext context,
+    required Interaction interaction,
     required Questionnaire questionnaire,
   }) {
     final snackBar = SnackBar(
@@ -43,6 +45,7 @@ class SnackBarWithProgress extends StatefulWidget {
             context,
             MaterialPageRoute(
               builder: (context) => QuestionnaireView(
+                interaction: interaction,
                 questionnaire: questionnaire,
                 initialPage: 0,
               ),
