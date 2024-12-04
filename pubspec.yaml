@@ -35,8 +35,8 @@ dependencies:
   shared_preferences: ^2.3.2
   wildlife_api_connection:
     git:
-      url: git@github.com:WildLifeNLApps/Wildlife-api-connection.git
-      ref: "c15d459"
+      url: git@github.com:WildLife-NL/Wildlife-api-connection.git
+      ref: "94d125c"
 
 
   # The following adds the Cupertino Icons font to your application.
