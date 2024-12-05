@@ -1152,7 +1152,7 @@ packages:
       path: "."
       ref: "2593dd1"
       resolved-ref: "2593dd1ca4d569dd786dde36784109f580b190a5"
-      url: "git@github.com:WildLifeNLApps/Wildlife-api-connection.git"
+      url: "git@github.com:WildLife-NL/Wildlife-api-connection.git"
     source: git
     version: "0.0.1"
   win32:

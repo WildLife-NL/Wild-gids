@@ -35,7 +35,7 @@ dependencies:
   shared_preferences: ^2.3.2
   wildlife_api_connection:
     git:
-      url: git@github.com:WildLifeNLApps/Wildlife-api-connection.git
+      url: git@github.com:WildLife-NL/Wildlife-api-connection.git
       ref: "2593dd1"
 
 

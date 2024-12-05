@@ -26,7 +26,7 @@ class HomeView extends StatefulWidget {
 }
 
 class _HomeViewState extends State<HomeView> {
-  int selectedIndex = 1;
+  int selectedIndex = 0;
   List<InteractionType> _interactionTypes = [];
 
   void onItemTapped(int index) {
