@@ -132,7 +132,7 @@ class SizeSetter {
   }
 
   static double getBottomNavigationBarHeight() {
-    return _getValueByScreenSize(xs: 65, sm: 95, md: 95, xl: 95);
+    return _getValueByScreenSize(xs: 55, sm: 65, md: 95, xl: 95);
   }
 
   // Sets horizontal padding based on screen size

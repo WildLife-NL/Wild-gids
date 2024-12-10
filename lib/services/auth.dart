@@ -1,5 +1,3 @@
-// ignore_for_file: prefer_typing_uninitialized_variables
-
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wildgids/config/app_config.dart';
@@ -7,16 +5,9 @@ import 'package:wildlife_api_connection/auth_api.dart';
 import 'package:wildlife_api_connection/models/user.dart';
 
 class AuthService {
-  var _authApi;
-
-  AuthService() {
-    _authApi = AuthApi(
-      AppConfig.shared.apiClient,
-    );
-  }
-  AuthService.test(AuthApi authApi) {
-    _authApi = authApi;
-  }
+  final _authApi = AuthApi(
+    AppConfig.shared.apiClient,
+  );
 
   Future<Map<String, dynamic>> authenticate(
     String email,
@@ -24,7 +15,7 @@ class AuthService {
   ) async {
     try {
       final response = await _authApi.authenticate(
-        displayNameApp,
+        displayNameApp ?? "",
         email,
       );
 

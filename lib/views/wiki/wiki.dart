@@ -28,9 +28,8 @@ class WikiViewState extends State<WikiView> {
   }
 
   List<String> categories = [
-    "Carnivoor",
-    "Herbivoor",
-    "Omnivoor",
+    "Evenhoevigen",
+    "Roofdieren",
     "Knaagdieren",
   ];
 
