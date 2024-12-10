@@ -18,7 +18,7 @@ void callbackDispatcher() {
       case Workmanager.iOSBackgroundTask:
         stderr.writeln("The iOS background fetch was triggered");
         break;
-      case "getallanimals":
+      case "getallanimals-task-identifier":
         stderr.writeln("getallanimals task was triggered");
         try {
           final isar = IsarDB.shared.instance;
@@ -46,7 +46,7 @@ void main() async {
 
   Workmanager().initialize(
     callbackDispatcher,
-    isInDebugMode: false,
+    isInDebugMode: true,
   );
 
   await dotenv.load(fileName: ".env");

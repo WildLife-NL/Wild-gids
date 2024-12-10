@@ -10,7 +10,7 @@ import workmanager
   ) -> Bool {
     GeneratedPluginRegistrant.register(with: self)
       // In AppDelegate.application method
-      WorkmanagerPlugin.registerTask(withIdentifier: "task-identifier")
+      WorkmanagerPlugin.registerTask(withIdentifier: "getallanimals-task-identifier")
 
       // Register a periodic task in iOS 13+
       WorkmanagerPlugin.registerTask(withIdentifier: "be.tramckrijte.workmanagerExample.iOSBackgroundAppRefresh")
