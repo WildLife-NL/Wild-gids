@@ -6,7 +6,7 @@ import 'package:latlong2/latlong.dart';
 import 'package:wildgids/config/theme/asset_icons.dart';
 import 'package:wildgids/config/theme/custom_colors.dart';
 import 'package:wildgids/services/species.dart';
-import 'package:wildgids/views/reporting/widgets/manager/location.dart';
+import 'package:wildgids/widgets/location.dart';
 import 'package:wildlife_api_connection/models/interaction_type.dart';
 import 'package:wildlife_api_connection/models/species.dart';
 

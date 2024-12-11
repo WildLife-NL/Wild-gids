@@ -6,7 +6,7 @@ import 'package:latlong2/latlong.dart';
 import 'package:wildgids/config/theme/asset_icons.dart';
 import 'package:wildgids/services/animal.dart';
 import 'package:wildgids/services/tracking.dart';
-import 'package:wildgids/views/reporting/widgets/manager/location.dart';
+import 'package:wildgids/widgets/location.dart';
 import 'package:wildlife_api_connection/models/animal_tracking.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:wildlife_api_connection/models/species.dart';
@@ -40,6 +40,7 @@ class MapViewState extends State<MapView> {
     processing();
   }
 
+  // On initial state, set the initial location and start fetching markers with a timer await to prevent multiple permission requests
   void processing() async {
     await _setInitialLocation();
     await _startTimers();
@@ -77,37 +78,11 @@ class MapViewState extends State<MapView> {
 
   // Get the current location of the device
   Future<LatLng> _determinePosition() async {
-    // bool serviceEnabled;
-    // LocationPermission permission;
-
-    // serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    // if (!serviceEnabled) {
-    //   return Future.error('Location services are disabled.');
-    // }
-
     if (!context.mounted) {
       return const LatLng(51.25851739912562, 5.622422796819703);
     }
     final location = await LocationManager().getUserLocation(context);
     return location;
-
-    // Check location permissions
-    // permission = await Geolocator.checkPermission();
-    // if (permission == LocationPermission.denied) {
-    //   permission = await Geolocator.requestPermission();
-    //   if (permission == LocationPermission.denied) {
-    //     return Future.error('Location permissions are denied');
-    //   }
-    // }
-
-    // Check if location permissions are permanently denied
-    // if (permission == LocationPermission.deniedForever) {
-    //   return Future.error(
-    //       'Location permissions are permanently denied, we cannot request permissions.');
-    // }
-
-    // Get the current location with granted permissions
-    // return await Geolocator.getCurrentPosition();
   }
 
   // Fetch markers from the server using the animal service
