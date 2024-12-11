@@ -1,8 +1,13 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:wildgids/app.dart';
 import 'package:wildgids/config/app_config.dart';
+import 'package:wildgids/config/theme/custom_colors.dart';
 import 'package:wildgids/services/auth.dart';
 import 'package:wildgids/widgets/custom_scaffold.dart';
+import 'package:wildlife_api_connection/auth_api.dart';
+import 'package:wildlife_api_connection/models/user.dart';
 
 class VerificationView extends StatefulWidget {
   final String email;
@@ -19,157 +24,129 @@ class VerificationView extends StatefulWidget {
 }
 
 class VerificationViewState extends State<VerificationView> {
-  final List<TextEditingController> _controllers =
-      List.generate(6, (_) => TextEditingController());
-  final _formKey = GlobalKey<FormState>();
-  final List<FocusNode> _focusNodes = List.generate(6, (_) => FocusNode());
+  final FocusNode pincodeFocusNode = FocusNode();
+  final TextEditingController _verificationCodeController =
+      TextEditingController();
 
   @override
-  void dispose() {
-    for (var controller in _controllers) {
-      controller.dispose();
-    }
-    for (var focusNode in _focusNodes) {
-      focusNode.dispose();
-    }
-    super.dispose();
+  void initState() {
+    super.initState();
+    pincodeFocusNode.requestFocus();
   }
 
-  void _nextField(int currentIndex) {
-    if (currentIndex < _focusNodes.length - 1) {
-      _focusNodes[currentIndex + 1].requestFocus();
-    }
-  }
-
-  void _previousField(int currentIndex) {
-    if (currentIndex > 0) {
-      _focusNodes[currentIndex - 1].requestFocus();
+  void checkVerificationCode() async {
+    try {
+      User user = await AuthApi(AppConfig.shared.apiClient)
+          .authorize(widget.email, _verificationCodeController.text);
+      debugPrint(user.name);
+      if (!mounted) return;
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const Initializer(),
+        ),
+      );
+    } catch (e) {
+      debugPrint(e.toString());
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return CustomScaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-        ),
-      ),
       body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Container(
+            width: 35,
+            height: 35,
+            decoration: const BoxDecoration(
+              shape: BoxShape.circle,
+              color: CustomColors.primary,
+            ),
+          ),
+          const SizedBox(height: 20),
           const Text(
-            'Enter code',
+            'Email verificatie',
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
+              color: CustomColors.primary,
             ),
           ),
-          const SizedBox(height: 8),
-          Text(
-            'An email has been sent to: ${widget.email}',
-            style: const TextStyle(
-              fontSize: 16,
-              color: Colors.grey,
-            ),
-          ),
-          const SizedBox(height: 32),
-          Form(
-            key: _formKey,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: List.generate(6, (index) {
-                return _buildCodeInputBox(_controllers[index], index);
-              }),
+          const SizedBox(height: 30),
+          RichText(
+            text: TextSpan(
+              style: const TextStyle(
+                fontSize: 16,
+                color: Colors.black,
+              ),
+              children: [
+                const TextSpan(
+                  text:
+                      'We hebben u een mail gestuurd met een 6 cijferige code erin om te verifiëren dat dit email van u is: ',
+                ),
+                TextSpan(
+                  text: widget.email,
+                  style: const TextStyle(
+                    color: CustomColors.primary,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
             ),
           ),
           const SizedBox(height: 24),
-          Center(
-            child: GestureDetector(
-              onTap: () {
-                AuthService().authenticate(
-                    widget.email, AppConfig.shared.displayNameApp);
-              },
-              child: const Text(
-                'Did not receive a code? Send new email',
-                style: TextStyle(
-                  color: Colors.purple,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+          PinCodeTextField(
+            pinTheme: PinTheme(
+              shape: PinCodeFieldShape.box,
+              borderRadius: BorderRadius.circular(5),
+              fieldHeight: 50,
+              fieldWidth: 40,
+              activeFillColor: CustomColors.light200,
+              inactiveFillColor: CustomColors.light200,
+              selectedFillColor: CustomColors.light250,
             ),
+            appContext: context,
+            length: 6,
+            focusNode: pincodeFocusNode,
+            controller: _verificationCodeController,
+            onCompleted: (p0) {
+              checkVerificationCode();
+            },
           ),
           const SizedBox(height: 24),
-          Center(
-            child: ElevatedButton(
-              onPressed: () async {
-                if (_formKey.currentState!.validate()) {
-                  final code = _controllers
-                      .map((controller) => controller.text.trim())
-                      .join();
-                  await widget.authService.authorize(widget.email, code);
-
-                  if (!context.mounted) return;
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const Initializer(),
-                    ),
-                  );
-                }
-              },
-              style: ElevatedButton.styleFrom(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 40, vertical: 12),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
+          RichText(
+            text: TextSpan(
+              style: const TextStyle(
+                fontSize: 16,
+                color: Colors.black,
+              ),
+              children: [
+                const TextSpan(
+                  text: 'Heeft u geen mail ontvangen? klik dan ',
                 ),
-              ),
-              child: const Text(
-                'Login',
-                style: TextStyle(fontSize: 16),
-              ),
+                TextSpan(
+                  text: "hier",
+                  style: const TextStyle(
+                    color: CustomColors.primary,
+                    fontWeight: FontWeight.bold,
+                    decoration: TextDecoration.underline,
+                  ),
+                  recognizer: TapGestureRecognizer()
+                    ..onTap = () {
+                      AuthService().authenticate(
+                        widget.email,
+                        AppConfig.shared.displayNameApp,
+                      );
+                    },
+                ),
+                const TextSpan(
+                  text: ' om een nieuwe mail te ontvangen.',
+                ),
+              ],
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildCodeInputBox(TextEditingController controller, int index) {
-    return SizedBox(
-      width: 50,
-      child: TextField(
-        controller: controller,
-        focusNode: _focusNodes[index],
-        maxLength: 1,
-        keyboardType: TextInputType.number,
-        textAlign: TextAlign.center,
-        onChanged: (value) {
-          if (value.isNotEmpty) {
-            _nextField(index);
-          } else {
-            _previousField(index);
-          }
-        },
-        onSubmitted: (_) => _nextField(index),
-        decoration: InputDecoration(
-          counterText: "",
-          enabledBorder: OutlineInputBorder(
-            borderSide: const BorderSide(color: Colors.grey, width: 2),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderSide: const BorderSide(color: Colors.purple, width: 2),
-            borderRadius: BorderRadius.circular(8),
-          ),
-        ),
-        style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
       ),
     );
   }

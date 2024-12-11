@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wildgids/config/theme/custom_colors.dart';
 import 'package:wildgids/services/auth.dart';
 import 'package:wildgids/views/login/verfication.dart';
 import 'package:wildgids/widgets/custom_scaffold.dart';
@@ -30,18 +31,27 @@ class LoginViewState extends State<LoginView> {
   Widget build(BuildContext context) {
     return CustomScaffold(
       body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: [
+          const SizedBox(height: 100),
+          Image.asset(
+            'assets/images/wildlife-logo.png',
+            fit: BoxFit.cover,
+          ),
+          const SizedBox(height: 30),
           const Text(
-            "Login",
+            "Welkom bij Wild Gids!",
             style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
+              color: CustomColors.primary,
             ),
           ),
           const Text(
-            "Enter your email to login",
+            "Login in met je email.",
             style: TextStyle(
-              fontSize: 20,
+              fontSize: 18,
               color: Colors.black,
             ),
           ),
@@ -73,7 +83,7 @@ class LoginViewState extends State<LoginView> {
                 const SizedBox(height: 10),
                 MaterialButton(
                   minWidth: double.maxFinite,
-                  color: Colors.grey,
+                  color: CustomColors.primary,
                   onPressed: () async {
                     if (_formKey.currentState!.validate()) {
                       final email = _emailController.text;
@@ -91,7 +101,12 @@ class LoginViewState extends State<LoginView> {
                       );
                     }
                   },
-                  child: const Text('Send code'),
+                  child: const Text(
+                    'Inloggen',
+                    style: TextStyle(
+                      color: Colors.white,
+                    ),
+                  ),
                 ),
               ],
             ),
