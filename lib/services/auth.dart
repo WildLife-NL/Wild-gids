@@ -3,6 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wildgids/config/app_config.dart';
 import 'package:wildlife_api_connection/auth_api.dart';
 import 'package:wildlife_api_connection/models/user.dart';
+import 'package:workmanager/workmanager.dart';
 
 class AuthService {
   final _authApi = AuthApi(
@@ -34,6 +35,13 @@ class AuthService {
       final response = await _authApi.authorize(
         email,
         code,
+      );
+
+      // Periodic task registration
+      Workmanager().registerPeriodicTask(
+        "getallanimals-task-identifier",
+        "getallanimals",
+        frequency: const Duration(days: 1),
       );
 
       return response;

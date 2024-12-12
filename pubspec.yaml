@@ -36,7 +36,7 @@ dependencies:
   wildlife_api_connection:
     git:
       url: git@github.com:WildLife-NL/Wildlife-api-connection.git
-      ref: "be651cb"
+      ref: "9248211"
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -51,10 +51,11 @@ dependencies:
   flutter_staggered_grid_view: ^0.7.0
   audioplayers: ^6.1.0
   path_provider: ^2.1.5
-  isar: ^4.0.0-dev.14
-  isar_flutter_libs: ^4.0.0-dev.14
+  isar: ^3.1.0+1
+  isar_flutter_libs: ^3.1.0+1
   flutter_map_location_marker: ^9.0.0
   flutter_compass: ^0.8.0
+  workmanager: ^0.5.2
   geolocator: ^12.0.0
   permission_handler: ^11.3.1
   smooth_page_indicator: ^1.2.0+3
@@ -70,6 +71,7 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^4.0.0
+  isar_generator: ^3.1.0+1
   mockito: ^5.4.4
   build_runner: ^2.4.13
 
