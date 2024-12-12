@@ -199,15 +199,6 @@ class DetailedWikiViewState extends State<DetailedWikiView> {
                       ],
                     ),
                     const SizedBox(height: 10),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                          foregroundColor: Colors.white,
-                          backgroundColor: Theme.of(context).primaryColor),
-                      onPressed: () {
-                        // TODO: Start Quiz
-                      },
-                      child: const Text('Start Quiz'),
-                    )
                   ],
                 ),
               ),
