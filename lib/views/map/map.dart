@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:wildgids/config/theme/asset_icons.dart';
 import 'package:wildgids/services/animal.dart';
 import 'package:wildgids/services/tracking.dart';
+import 'package:wildgids/widgets/location.dart';
 import 'package:wildlife_api_connection/models/animal_tracking.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:wildlife_api_connection/models/species.dart';
@@ -37,12 +37,15 @@ class MapViewState extends State<MapView> {
   @override
   void initState() {
     super.initState();
-    _setInitialLocation();
-    _startTimers();
+    processing();
+  }
 
-    // Fetch markers and send tracking on initial load
-    _sendTracking();
-    _fetchMarkers();
+  // On initial state, set the initial location and start fetching markers with a timer await to prevent multiple permission requests
+  void processing() async {
+    await _setInitialLocation();
+    await _startTimers();
+    await _sendTracking();
+    await _fetchMarkers();
   }
 
   @override
@@ -53,57 +56,37 @@ class MapViewState extends State<MapView> {
   }
 
   // Set initial location for map bounds and camera center
-  void _setInitialLocation() async {
-    Position position = await _determinePosition();
+  Future<void> _setInitialLocation() async {
+    LatLng position = await _determinePosition();
 
     setState(() {
-      _initialPosition = LatLng(position.latitude, position.longitude);
+      _initialPosition = position;
     });
   }
 
   // Start timer to retrieve/upload location and fetch markers
-  void _startTimers() async {
+  Future<void> _startTimers() async {
     // Set timer to retrieve location every 10 seconds
     _animalTimer = Timer.periodic(const Duration(seconds: 10), (timer) async {
-      _fetchMarkers();
+      await _fetchMarkers();
     });
 
     _trackingTimer = Timer.periodic(const Duration(minutes: 1), (timer) async {
-      _sendTracking();
+      await _sendTracking();
     });
   }
 
   // Get the current location of the device
-  Future<Position> _determinePosition() async {
-    bool serviceEnabled;
-    LocationPermission permission;
-
-    serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      return Future.error('Location services are disabled.');
+  Future<LatLng> _determinePosition() async {
+    if (!context.mounted) {
+      return const LatLng(51.25851739912562, 5.622422796819703);
     }
-
-    // Check location permissions
-    permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
-        return Future.error('Location permissions are denied');
-      }
-    }
-
-    // Check if location permissions are permanently denied
-    if (permission == LocationPermission.deniedForever) {
-      return Future.error(
-          'Location permissions are permanently denied, we cannot request permissions.');
-    }
-
-    // Get the current location with granted permissions
-    return await Geolocator.getCurrentPosition();
+    final location = await LocationManager().getUserLocation(context);
+    return location;
   }
 
   // Fetch markers from the server using the animal service
-  void _fetchMarkers() async {
+  Future<void> _fetchMarkers() async {
     try {
       // Simulating API call
       List<AnimalTracking> animalTrackings =
@@ -151,8 +134,8 @@ class MapViewState extends State<MapView> {
     }
   }
 
-  void _sendTracking() async {
-    Position position = await _determinePosition();
+  Future<void> _sendTracking() async {
+    LatLng position = await _determinePosition();
     widget.trackingService
         .sendTrackingReading(LatLng(position.latitude, position.longitude));
     debugPrint('Sent tracking reading');

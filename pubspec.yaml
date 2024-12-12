@@ -2,7 +2,7 @@ name: wildgids
 description: "A new Flutter project."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
-publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+publish_to: "none" # Remove this line if you wish to publish to pub.dev
 
 # The following defines the version and build number for your application.
 # A version number is three numbers separated by dots, like 1.2.43
@@ -31,13 +31,12 @@ dependencies:
   flutter:
     sdk: flutter
 
-  http: ^1.2.2 
+  http: ^1.2.2
   shared_preferences: ^2.3.2
   wildlife_api_connection:
     git:
       url: git@github.com:WildLife-NL/Wildlife-api-connection.git
-      ref: "0cd3f7b"
-
+      ref: "be651cb"
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -47,17 +46,19 @@ dependencies:
   flutter_map: ^7.0.2
   latlong2: ^0.9.1
   url_launcher: ^6.3.1
-  flutter_svg: ^2.0.10+1
+  flutter_svg: ^2.0.13
   provider: ^6.1.2
   flutter_staggered_grid_view: ^0.7.0
   audioplayers: ^6.1.0
   path_provider: ^2.1.5
   isar: ^4.0.0-dev.14
   isar_flutter_libs: ^4.0.0-dev.14
-  geolocator: ^12.0.0
   flutter_map_location_marker: ^9.0.0
   flutter_compass: ^0.8.0
   workmanager: ^0.5.2
+  geolocator: ^12.0.0
+  permission_handler: ^11.3.1
+  smooth_page_indicator: ^1.2.0+3
 
 dev_dependencies:
   flutter_test:
@@ -77,7 +78,6 @@ dev_dependencies:
 
 # The following section is specific to Flutter packages.
 flutter:
-
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.
@@ -87,6 +87,9 @@ flutter:
   assets:
     - .env
     - assets/icons/
+    - assets/icons/interaction-types/
+    - assets/icons/animal-species/
+    - assets/icons/numbers/
     - assets/images/
     - assets/mp3/
 
