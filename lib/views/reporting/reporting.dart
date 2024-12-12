@@ -5,6 +5,7 @@ import 'package:wildgids/config/theme/custom_colors.dart';
 import 'package:wildgids/services/interation.dart';
 import 'package:wildgids/views/home/home.dart';
 import 'package:wildgids/views/reporting/reporting_card.dart';
+import 'package:wildgids/widgets/location.dart';
 import 'package:wildlife_api_connection/models/interaction.dart';
 import 'package:wildlife_api_connection/models/interaction_type.dart';
 import 'package:wildlife_api_connection/models/location.dart';
@@ -60,9 +61,9 @@ class ReportingViewState extends State<ReportingView> {
   void _updateInteractionData(
     String? description,
     Species? species,
-    LatLng? location,
     String? animalSpecies,
-  ) {
+  ) async {
+    final location = await LocationManager().getUserLocation(context);
     setState(() {
       _description = description;
       _selectedSpecies = species;
