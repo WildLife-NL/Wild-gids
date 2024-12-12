@@ -2,14 +2,13 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:isar/isar.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:wildgids/app.dart';
 import 'package:wildgids/config/app_config.dart';
 import 'package:wildgids/services/animal.dart';
 import 'package:wildgids/services/isar/helpers/isar_db.dart';
-import 'package:workmanager/workmanager.dart';
 import 'package:wildlife_api_connection/models/isar/isar_animal_tracking.dart';
+import 'package:workmanager/workmanager.dart';
 
 @pragma('vm:entry-point')
 void callbackDispatcher() {
@@ -26,9 +25,11 @@ void callbackDispatcher() {
           final animalTrackings = await AnimalService().getAllAnimalTrackings();
 
           for (final animalTracking in animalTrackings) {
-            final isarAnimalTracking = IsarAnimalTracking.fromAnimalTracking(
-                animalTracking, isar.isarAnimalTrackings.autoIncrement());
-            isar.isarAnimalTrackings.put(isarAnimalTracking);
+            final isarAnimalTracking =
+                IsarAnimalTracking.fromAnimalTracking(animalTracking);
+            isar.writeTxn(() async {
+              return isar.isarAnimalTrackings.put(isarAnimalTracking);
+            });
           }
         } catch (e) {
           stderr.writeln("getallanimals task failed: $e");

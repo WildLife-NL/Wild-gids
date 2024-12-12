@@ -1,14 +1,18 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:isar/isar.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:wildgids/config/theme/asset_icons.dart';
 import 'package:wildgids/services/animal.dart';
+import 'package:wildgids/services/isar/helpers/isar_db.dart';
 import 'package:wildgids/services/tracking.dart';
 import 'package:wildgids/widgets/location.dart';
 import 'package:wildlife_api_connection/models/animal_tracking.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:wildlife_api_connection/models/isar/isar_animal_tracking.dart';
 import 'package:wildlife_api_connection/models/species.dart';
 
 class MapView extends StatefulWidget {
@@ -88,11 +92,42 @@ class MapViewState extends State<MapView> {
   // Fetch markers from the server using the animal service
   Future<void> _fetchMarkers() async {
     try {
-      // Simulating API call
-      List<AnimalTracking> animalTrackings =
-          await widget.animalService.getAllAnimalTrackings();
-      debugPrint('Animal trackings length: ${animalTrackings.length}');
+      final isar = IsarDB.shared.instance;
+      List<AnimalTracking> animalTrackings = [];
 
+      List<IsarAnimalTracking> isarAnimalTrackings =
+          await isar.isarAnimalTrackings.where().findAll();
+
+      if (isarAnimalTrackings.isNotEmpty) {
+        setState(() {
+          animalTrackings = isarAnimalTrackings
+              .map((isarAnimalTracking) =>
+                  AnimalTracking.fromIsar(isarAnimalTracking))
+              .toList();
+        });
+      }
+
+      // Simulating API call
+      List<AnimalTracking> apiAnimalTrackings =
+          await widget.animalService.getAllAnimalTrackings();
+
+      if (apiAnimalTrackings.isNotEmpty) {
+        isar.writeTxn(() async {
+          await isar.isarAnimalTrackings.clear();
+        });
+        for (final animalTracking in apiAnimalTrackings) {
+          final isarAnimalTracking =
+              IsarAnimalTracking.fromAnimalTracking(animalTracking);
+
+          await isar.writeTxn(() async {
+            return isar.isarAnimalTrackings.put(isarAnimalTracking);
+          });
+        }
+      }
+
+      setState(() {
+        animalTrackings = apiAnimalTrackings;
+      });
       // Marker options
       List<Marker> newMarkers = animalTrackings.map((tracking) {
         var animalMarkerOptions = _getAnimalMarkerOptions(tracking.species);

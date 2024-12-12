@@ -1,10 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wildgids/config/app_config.dart';
-import 'package:wildlife_api_connection/api_client.dart';
 import 'package:wildlife_api_connection/auth_api.dart';
 import 'package:wildlife_api_connection/models/user.dart';
-import 'package:wildlife_api_connection/profile_api.dart';
 import 'package:workmanager/workmanager.dart';
 
 class AuthService {
