@@ -3,10 +3,12 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
+import 'package:flutter_map_cancellable_tile_provider/flutter_map_cancellable_tile_provider.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:isar/isar.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:wildgids/config/theme/asset_icons.dart';
+import 'package:wildgids/config/theme/custom_colors.dart';
 import 'package:wildgids/services/animal.dart';
 import 'package:wildgids/services/isar/helpers/isar_db.dart';
 import 'package:wildgids/services/tracking.dart';
@@ -36,6 +38,7 @@ class MapViewState extends State<MapView> {
   List<Marker> _markers = [];
   LatLng? _initialPosition;
   final MapController _mapController = MapController();
+  bool _isSatellite = false;
 
   // On initial state, set the initial location and start fetching markers with a timer
   @override
@@ -70,11 +73,12 @@ class MapViewState extends State<MapView> {
 
   // Start timer to retrieve/upload location and fetch markers
   Future<void> _startTimers() async {
-    // Set timer to retrieve location every 10 seconds
+    // Set timer to fetch markers every 10 seconds
     _animalTimer = Timer.periodic(const Duration(seconds: 10), (timer) async {
       await _fetchMarkers();
     });
 
+    // Set timer to send location every minute
     _trackingTimer = Timer.periodic(const Duration(minutes: 1), (timer) async {
       await _sendTracking();
     });
@@ -89,7 +93,7 @@ class MapViewState extends State<MapView> {
     return location;
   }
 
-  // Fetch markers from the server using the animal service
+  // Fetch markers from isar database using the animal service
   Future<void> _fetchMarkers() async {
     try {
       final isar = IsarDB.shared.instance;
@@ -107,7 +111,7 @@ class MapViewState extends State<MapView> {
         });
       }
 
-      // Simulating API call
+      // Api call to get all animal trackings and update isar database
       List<AnimalTracking> apiAnimalTrackings =
           await widget.animalService.getAllAnimalTrackings();
 
@@ -128,7 +132,7 @@ class MapViewState extends State<MapView> {
       setState(() {
         animalTrackings = apiAnimalTrackings;
       });
-      // Marker options
+      // Create markers for each animal tracking with options based on species
       List<Marker> newMarkers = animalTrackings.map((tracking) {
         var animalMarkerOptions = _getAnimalMarkerOptions(tracking.species);
         return Marker(
@@ -192,26 +196,67 @@ class MapViewState extends State<MapView> {
           _initialPosition!.latitude + 0.1, _initialPosition!.longitude + 0.1),
     );
 
-    // Map settings
-    return FlutterMap(
-      mapController: _mapController,
-      options: MapOptions(
-        initialCenter: _initialPosition!,
-        initialZoom: 16,
-        minZoom: 12,
-        maxZoom: 20,
-        cameraConstraint: CameraConstraint.containCenter(bounds: bounds),
+    return Scaffold(
+      body: Stack(
+        children: [
+          // FlutterMap to display the map
+          FlutterMap(
+            mapController: _mapController,
+            options: MapOptions(
+              initialCenter: _initialPosition!,
+              initialZoom: 16,
+              minZoom: 12,
+              maxZoom: 20,
+              cameraConstraint: CameraConstraint.containCenter(bounds: bounds),
+            ),
+            children: [
+              // Map tiles (Satellite or Street view based on _isSatellite)
+              TileLayer(
+                urlTemplate: _isSatellite
+                    ? 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'
+                    : 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                tileProvider: CancellableNetworkTileProvider(),
+                userAgentPackageName: 'com.wildlifenl.wildgids',
+              ),
+              // Current location indicator
+              CurrentLocationLayer(),
+              // Marker layer
+              MarkerLayer(markers: _markers),
+            ],
+          ),
+
+          // Floating toggle button
+          Positioned(
+            bottom: 20,
+            right: 20,
+            child: GestureDetector(
+              onTap: () {
+                setState(() {
+                  _isSatellite = !_isSatellite; // Toggle map view
+                });
+              },
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(8),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.2),
+                      blurRadius: 4,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                padding: const EdgeInsets.all(8),
+                child: Icon(
+                  Icons.satellite_alt,
+                  color: _isSatellite ? CustomColors.primary : Colors.grey,
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
-      children: [
-        // Used to display the map tiles, in this case the World Imagery tiles (Check out other free tiles #https://alexurquhart.github.io/free-tiles/)
-        TileLayer(
-          urlTemplate:
-              'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-          userAgentPackageName: 'com.wildlifenl.wildgids',
-        ),
-        CurrentLocationLayer(), // Used to display the current location of the user (blue dot)
-        MarkerLayer(markers: _markers),
-      ],
     );
   }
 }
@@ -229,7 +274,7 @@ class AnimalMarker {
   });
 }
 
-// Function to determine icon based on animal type
+// Function to determine icon based on animal species
 AnimalMarker _getAnimalMarkerOptions(Species species) {
   switch (species.id) {
     case '2e6e75fb-4888-4c8d-81c6-ab31c63a7ecb':
