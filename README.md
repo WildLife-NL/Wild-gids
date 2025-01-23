@@ -19,8 +19,9 @@ WildGids is one of the two apps that is mostly going to be used by the recreatio
 1. Install Flutter SDK: [Installation Guide](https://flutter.dev/docs/get-started/install)
 2. Clone the repository:
   ```bash
-  git clone https://github.com/WildLife-NL/Wild-gids.git
-  ```
+  git clone https://github.com/WildLife-NL/Wild-gids.git
+  ```
+  
 3. Create a .env. See an example below:
   ```bash
   PROD_BASE_URL="http://localhost"
