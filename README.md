@@ -18,46 +18,45 @@ WildGids is one of the two apps that is mostly going to be used by the recreatio
 ## Installation
 1. Install Flutter SDK: [Installation Guide](https://flutter.dev/docs/get-started/install)
 2. Clone the repository:
-  ```bash
+  ```shell
   git clone https://github.com/WildLife-NL/Wild-gids.git
   ```
-  
 3. Create a .env. See an example below:
-  ```bash
+  ```shell
   PROD_BASE_URL="http://localhost"
   DEV_BASE_URL="http://localhost"
   ```
 4. Navigate to the project folder and install dependencies:
-  ```bash
+  ```shell
   cd myapp
   flutter pub get
   ```
 5. Run the app on your desired platform:
-  ```bash
+  ```shell
   flutter run
   ```
 
 ## Running WildGids
 - To run on Android:
-   ```bash
+   ```shell
    flutter run
    ```
 - To run on iOS (ensure you have Xcode installed):
-   ```bash
+   ```shell
    flutter run
    ```
 
 ## Flavors
 We use flavors to manage different configurations for development, staging, and production environments. Flavors ensure that you can switch between environments without modifying the core app code.
 - **Development:**
-   ```bash
+   ```shell
    flutter run --flavor development
    ```
 - **Production:**
-   ```bash
+   ```shell
    flutter run --flavor production
    ```
 To build APKs for specific environments:
-```bash
+```shell
 flutter build apk --flavor production --release
 ```
