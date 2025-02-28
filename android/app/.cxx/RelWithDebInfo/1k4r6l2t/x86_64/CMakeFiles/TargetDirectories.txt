@@ -1,0 +1,2 @@
+E:/Documents3/Fontys/Sem5/WildLifeNL/WildGids/Wild-gids/android/app/.cxx/RelWithDebInfo/1k4r6l2t/x86_64/CMakeFiles/edit_cache.dir
+E:/Documents3/Fontys/Sem5/WildLifeNL/WildGids/Wild-gids/android/app/.cxx/RelWithDebInfo/1k4r6l2t/x86_64/CMakeFiles/rebuild_cache.dir
