@@ -10,7 +10,8 @@ class SpeciesService {
 
   Future<List<Species>> getAllSpecies() {
     try {
-      return _speciesApi.getAllSpecies();
+      final response = _speciesApi.getAllSpecies();
+      return response;
     } catch (e) {
       debugPrint("Get all species failed: $e");
       throw ("Get all species failed: $e");

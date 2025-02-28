@@ -10,7 +10,8 @@ class InteractionTypeService {
 
   Future<List<InteractionType>> getAllInteractionTypes() {
     try {
-      return _interactionTypeApi.getAll();
+      final response = _interactionTypeApi.getAll();
+      return response;
     } catch (e) {
       debugPrint("Get all interation types failed: $e");
       throw ("Get all interaction types failed: $e");

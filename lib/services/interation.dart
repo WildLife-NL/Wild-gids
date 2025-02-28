@@ -16,7 +16,9 @@ class InteractionService {
     int typeId,
   ) {
     try {
-      return _interactionApi.create(description, location, speciesId, typeId);
+      final response =
+          _interactionApi.create(description, location, speciesId, typeId);
+      return response;
     } catch (e) {
       debugPrint("Get all interation types failed: $e");
       throw ("Get all interaction types failed: $e");

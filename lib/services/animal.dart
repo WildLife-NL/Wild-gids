@@ -10,7 +10,8 @@ class AnimalService {
 
   Future<List<AnimalTracking>> getAllAnimalTrackings() async {
     try {
-      return await _animalApi.getAllAnimalTrackings();
+      final response = await _animalApi.getAllAnimalTrackings();
+      return response;
     } catch (e) {
       debugPrint("Get all animal trackings failed: $e");
       throw ("Get all animal trackings failed: $e");
