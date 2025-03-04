@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:wildgids/config/theme/custom_colors.dart';
 import 'package:wildgids/services/auth.dart';
-import 'package:wildgids/views/login/verfication.dart';
+import 'package:wildgids/services/verfication.dart';
 import 'package:wildgids/widgets/custom_scaffold.dart';
 
 class LoginView extends StatefulWidget {

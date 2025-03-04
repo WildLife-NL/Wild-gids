@@ -2,7 +2,7 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:wildgids/config/theme/custom_colors.dart';
 import 'package:wildgids/widgets/bullet_list.dart';
-import 'package:wildgids/views/wiki/widgets/player_widget.dart';
+import 'package:wildgids/widgets/wiki/player_widget.dart';
 import 'package:wildlife_api_connection/models/species.dart';
 
 class DetailedWikiView extends StatefulWidget {

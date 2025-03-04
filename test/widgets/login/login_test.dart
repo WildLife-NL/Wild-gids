@@ -6,7 +6,7 @@ import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:wildgids/services/auth.dart';
 import 'package:wildgids/views/login/login.dart';
-import 'package:wildgids/views/login/verfication.dart';
+import 'package:wildgids/services/verfication.dart';
 
 import 'login_test.mocks.dart';
 

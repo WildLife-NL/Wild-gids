@@ -14,9 +14,7 @@ class ResponseService {
     String text,
   ) {
     try {
-      final response =
-          _responseApi.addResponse(interactionId, questionId, answerId, text);
-      return response;
+      return _responseApi.addResponse(interactionId, questionId, answerId, text);
     } catch (e) {
       debugPrint("Create response failed: $e");
       throw ("Create response failed: $e");

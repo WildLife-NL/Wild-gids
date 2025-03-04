@@ -4,7 +4,7 @@ import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:wildgids/config/theme/custom_colors.dart';
 import 'package:wildgids/services/interation.dart';
 import 'package:wildgids/views/home/home.dart';
-import 'package:wildgids/views/reporting/reporting_card.dart';
+import 'package:wildgids/widgets/reporting/reporting_card.dart';
 import 'package:wildgids/widgets/location.dart';
 import 'package:wildlife_api_connection/models/interaction.dart';
 import 'package:wildlife_api_connection/models/interaction_type.dart';

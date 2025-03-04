@@ -10,8 +10,7 @@ class UserService {
 
   Future<User> getMyProfile() async {
     try {
-      final response = await _profileApi.getMyProfile();
-      return response;
+      return await _profileApi.getMyProfile();
     } catch (e) {
       debugPrint("Get my profile failed: $e");
       throw ("Get my profile failed: $e");
